@@ -20,6 +20,7 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgGenres = new BindingSource();
         private readonly BindingSource bdgPublics = new BindingSource();
         private readonly BindingSource bdgRayons = new BindingSource();
+        private readonly BindingSource bdgSuivis = new BindingSource();
 
         /// <summary>
         /// Constructeur : création du contrôleur lié à ce formulaire
@@ -50,6 +51,7 @@ namespace MediaTekDocuments.view
         #region Onglet Livres
         private readonly BindingSource bdgLivresListe = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
+
 
         /// <summary>
         /// Ouverture de l'onglet Livres : 
@@ -1239,5 +1241,58 @@ namespace MediaTekDocuments.view
             }
         }
         #endregion
+
+        #region Onglet Commandes
+
+        //Variables
+        private List<Suivi> lesSuivi = new List<Suivi>();
+        List<CommandeSuivie> lesCommandesSuivies = new List<CommandeSuivie>();
+        private List<Commande> lesCommandes = new List<Commande>();
+        private readonly BindingSource bdgCommandesListe = new BindingSource();
+        private readonly BindingSource bdgSuiviListe = new BindingSource();
+        private readonly BindingSource bdgCommandesAvecSuiviListe = new BindingSource();
+        private bool isAscending = true; //Gestion d'état dynamique pour triage
+
+        /// <summary>
+        /// Ouverture de l'onglet Commandes : 
+        /// appel des méthodes pour remplir le datagrid des commandes et des combos (genre, rayon, public)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TAB_COMMANDE_Enter(object sender, EventArgs e)
+        {
+            lesCommandes = controller.GetAllCommandes();
+            lesSuivi = controller.GetAllSuivi();
+            lesCommandesSuivies = new List<CommandeSuivie>();
+            RemplirCommandesListeComplete();
+        }
+
+        /// <summary>
+        /// Affichage de la liste complète des Commandes
+        /// et annulation de toutes les recherches et filtres
+        /// </summary>
+        private void RemplirCommandesListeComplete()
+        {
+            RemplirCommandeAvecSuivi();
+            VideLivresZones();
+        }
+
+        private void RemplirCommandeAvecSuivi()
+        {
+            var commandesAvecSuivi = controller.GetCommandesSuivisDTO();
+
+            // Log de test : vérifie les premières lignes
+            foreach (var item in commandesAvecSuivi.Take(5))
+            {
+                MessageBox.Show($"Commande: {item.CommandeId}, SuiviId: {item.SuiviId}, Statut: {item.StatutSuivi}");
+            }
+
+            DATAGRID_COMMANDES.DataSource = null;
+            DATAGRID_COMMANDES.DataSource = commandesAvecSuivi;
+            DATAGRID_COMMANDES.Refresh();
+        }
+
+        #endregion
+
     }
 }

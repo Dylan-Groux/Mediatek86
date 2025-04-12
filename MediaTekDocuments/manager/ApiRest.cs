@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MediaTekDocuments.manager
@@ -27,7 +29,7 @@ namespace MediaTekDocuments.manager
         /// </summary>
         /// <param name="uriApi">adresse de l'api</param>
         /// <param name="authenticationString">chaîne d'authentification</param>
-        private ApiRest(String uriApi, String authenticationString="")
+        private ApiRest(String uriApi, String authenticationString = "")
         {
             httpClient = new HttpClient() { BaseAddress = new Uri(uriApi) };
             // prise en compte dans l'url de l'authentificaiton (basic authorization), si elle n'est pas vide
@@ -44,11 +46,11 @@ namespace MediaTekDocuments.manager
         /// <param name="uriApi">adresse de l'api</param>
         /// <param name="authenticationString">chaîne d'authentificatio (login:pwd)</param>
         /// <returns></returns>
-        public static ApiRest GetInstance(String uriApi, String authenticationString)
+        public static ApiRest GetInstance(String uriApi)
         {
-            if(instance == null)
+            if (instance == null)
             {
-                instance = new ApiRest(uriApi, authenticationString);
+                instance = new ApiRest(uriApi);
             }
             return instance;
         }
@@ -64,32 +66,81 @@ namespace MediaTekDocuments.manager
         {
             // transformation des paramètres pour les mettre dans le body
             StringContent content = null;
-            if(!(parametres is null))
+            if (!(parametres is null))
             {
                 content = new StringContent(parametres, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
             }
             // envoi du message et attente de la réponse
-            switch (methode)
+            try
             {
-                case "GET":
-                    httpResponse = httpClient.GetAsync(message).Result;
-                    break;
-                case "POST":
-                    httpResponse = httpClient.PostAsync(message, content).Result;
-                    break;
-                case "PUT":
-                    httpResponse = httpClient.PutAsync(message, content).Result;
-                    break;
-                case "DELETE":
-                    httpResponse = httpClient.DeleteAsync(message).Result;
-                    break;
-                // methode incorrecte
-                default:
-                    return new JObject();
+                switch (methode)
+                {
+                    case "GET":
+                        httpResponse = httpClient.GetAsync(message).Result;
+                        break;
+                    case "POST":
+                        httpResponse = httpClient.PostAsync(message, content).Result;
+                        break;
+                    case "PUT":
+                        httpResponse = httpClient.PutAsync(message, content).Result;
+                        break;
+                    case "DELETE":
+                        httpResponse = httpClient.DeleteAsync(message).Result;
+                        break;
+                    // methode incorrecte
+                    default:
+                        return new JObject();
+                }
+
+                // Lire le contenu de la réponse HTTP en tant que chaîne
+                string responseContent = httpResponse.Content.ReadAsStringAsync().Result;
+
+                // Vérifier si la réponse est du JSON valide
+                if (responseContent.StartsWith("{") || responseContent.StartsWith("["))
+                {
+                    return JsonConvert.DeserializeObject<JObject>(responseContent);
+                }
+                else
+                {
+                    throw new Exception("La réponse de l'API n'est pas du JSON valide.");
+                }
             }
-            // récupération de l'information retournée par l'api
-            return httpResponse.Content.ReadAsAsync<JObject>().Result;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'accès à l'API : {ex.Message}");
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Envoi une demande GET à l'API et récupère la réponse de manière asynchrone
+        /// </summary>
+        /// <typeparam name="T">Type de l'objet attendu en réponse</typeparam>
+        /// <param name="url">URL de l'API</param>
+        /// <returns>Objet désérialisé de type T</returns>
+        public async Task<T> GetApiResponseAsync<T>(string url)
+        {
+            try
+            {
+                HttpResponseMessage response = await httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                // Vérifier si la réponse est du JSON valide
+                if (responseBody.StartsWith("{") || responseBody.StartsWith("["))
+                {
+                    return JsonConvert.DeserializeObject<T>(responseBody);
+                }
+                else
+                {
+                    throw new Exception("La réponse de l'API n'est pas du JSON valide.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'accès à l'API : {ex.Message}");
+                throw;
+            }
+        }
     }
 }

@@ -12,9 +12,22 @@ namespace MediaTekDocuments
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmMediatek());
+            // Gestion des exceptions non gérées
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                MessageBox.Show($"Une erreur non gérée s'est produite : {e.ExceptionObject.ToString()}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new FrmMediatek());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur dans le programme : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MediaTekDocuments.dal
 {
@@ -48,7 +49,7 @@ namespace MediaTekDocuments.dal
             try
             {
                 authenticationString = "admin:adminpwd";
-                api = ApiRest.GetInstance(uriApi, authenticationString);
+                api = ApiRest.GetInstance(uriApi);
             }
             catch (Exception e)
             {
@@ -63,7 +64,7 @@ namespace MediaTekDocuments.dal
         /// <returns>instance unique de la classe</returns>
         public static Access GetInstance()
         {
-            if(instance == null)
+            if (instance == null)
             {
                 instance = new Access();
             }
@@ -171,7 +172,7 @@ namespace MediaTekDocuments.dal
         /// <param name="message">information envoyée dans l'url</param>
         /// <param name="parametres">paramètres à envoyer dans le body, au format "chp1=val1&chp2=val2&..."</param>
         /// <returns>liste d'objets récupérés (ou liste vide)</returns>
-        private List<T> TraitementRecup<T> (String methode, String message, String parametres)
+        private List<T> TraitementRecup<T>(String methode, String message, String parametres)
         {
             // trans
             List<T> liste = new List<T>();
@@ -194,9 +195,11 @@ namespace MediaTekDocuments.dal
                 {
                     Console.WriteLine("code erreur = " + code + " message = " + (String)retour["message"]);
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("Erreur lors de l'accès à l'API : "+e.Message);
+                Console.WriteLine("Erreur lors de l'accès à l'API : " + e.Message);
+                MessageBox.Show($"Erreur lors de l'accès à l'API : {e.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(0);
             }
             return liste;
@@ -244,5 +247,29 @@ namespace MediaTekDocuments.dal
             }
         }
 
+        #region Commandes
+        /// <summary>
+        /// Retourne toutes les commandes à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets Commandes</returns>
+        public List<Commande> GetAllCommandes()
+        {
+            List<Commande> lesCommandes = TraitementRecup<Commande>(GET, "commande", null);
+            return lesCommandes;
+        }
+        #endregion
+
+        #region Suivi
+        /// <summary>
+        /// Retourne tous les suivi à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets Suivi</returns>
+        public List<Suivi> GetAllSuivi()
+        {
+            List<Suivi> lesSuivi = TraitementRecup<Suivi>(GET, "suivi", null);
+            return lesSuivi;
+        }
+
+        #endregion
     }
 }

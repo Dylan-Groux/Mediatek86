@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using MediaTekDocuments.model;
 using MediaTekDocuments.dal;
+using System.Linq;
+using System;
+using System.Windows.Forms;
 
 namespace MediaTekDocuments.controller
 {
@@ -95,6 +98,74 @@ namespace MediaTekDocuments.controller
         public bool CreerExemplaire(Exemplaire exemplaire)
         {
             return access.CreerExemplaire(exemplaire);
+        }
+
+        /// <summary>
+        /// getter sur la liste des Commandes
+        /// </summary>
+        /// <returns>Liste d'objets Commandes</returns>
+        public List<Commande> GetAllCommandes()
+        {
+            return access.GetAllCommandes();
+        }
+
+
+        /// <summary>
+        /// getter sur la liste des Suivi
+        /// </summary>
+        /// <returns>Liste d'objets Suivi</returns>
+        public List<Suivi> GetAllSuivi()
+        {
+            var suivis = access.GetAllSuivi();
+
+            if (suivis == null)
+            {
+                MessageBox.Show("Erreur : La liste des suivis est vide.");
+                return new List<Suivi>(); // Retourne une liste vide si null
+            }
+
+            return suivis;
+        }
+
+        public Commande GetCommandeAvecSuivis(string commandeId)
+        {
+            // Supposons que tu récupères une commande par son Id
+            var commande = GetAllCommandes().FirstOrDefault(c => c.Id == commandeId);
+
+            if (commande != null)
+            {
+                // Récupérer tous les suivis associés à cette commande (tu peux le faire via une jointure)
+                commande.Suivis = GetAllSuivi().Where(s => s.IdCommande == commande.Id).ToList();
+            }
+
+            return commande;
+        }
+
+        public List<CommandeSuiviDTO> GetCommandesSuivisDTO()
+        {
+            var commandes = GetAllCommandes();
+            var suivis = GetAllSuivi();
+
+            // Log pour vérifier la taille des listes
+            MessageBox.Show($"Commandes : {commandes.Count}, Suivis : {suivis.Count}");
+
+            // La jointure entre Commande et Suivi
+            var result = from c in commandes
+                         join s in suivis on c.Id equals s.IdCommande into csGroup
+                         from s in csGroup.DefaultIfEmpty()  // Utilisation de DefaultIfEmpty pour gérer les suivis nuls
+                         select new CommandeSuiviDTO
+                         {
+                             CommandeId = c.Id,
+                             DateCommande = c.DateCommande,
+                             Montant = c.Montant,
+                             // Vérifier si 's' est null avant d'accéder à ses propriétés
+                             SuiviId = s != null ? s.id_suivi : null,
+                             DateSuivi = s.DateSuivi,
+                             StatutSuivi = s.Status // Gestion du cas où 's' est null
+                         };
+
+            // Retourner le résultat sous forme de liste
+            return result.ToList();
         }
     }
 }

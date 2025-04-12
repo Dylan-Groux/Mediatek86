@@ -1,0 +1,54 @@
+namespace MediaTekDocuments.view
+{
+    partial class FrmMediatek
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        // Déclaration des contrôles principaux
+        private System.Windows.Forms.TabControl tabOngletsApplication;
+        private System.Windows.Forms.TabPage tabLivres;
+        private System.Windows.Forms.TabPage tabDvd;
+        private System.Windows.Forms.TabPage tabRevues;
+        private System.Windows.Forms.TabPage tabReceptionRevue;
+        private System.Windows.Forms.TabPage tabCommandesLivres;
+
+        /// <summary>
+        /// Nettoyage des ressources utilisées.
+        /// </summary>
+        /// <param name="disposing">true si les ressources managées doivent être supprimées ; sinon, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Méthode requise pour la prise en charge du concepteur.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.tabOngletsApplication = new System.Windows.Forms.TabControl();
+            this.tabLivres = new System.Windows.Forms.TabPage();
+            this.tabDvd = new System.Windows.Forms.TabPage();
+            this.tabRevues = new System.Windows.Forms.TabPage();
+            this.tabReceptionRevue = new System.Windows.Forms.TabPage();
+            this.tabCommandesLivres = new System.Windows.Forms.TabPage();
+
+            // Configuration des onglets
+            this.tabOngletsApplication.Controls.Add(this.tabLivres);
+            this.tabOngletsApplication.Controls.Add(this.tabDvd);
+            this.tabOngletsApplication.Controls.Add(this.tabRevues);
+            this.tabOngletsApplication.Controls.Add(this.tabReceptionRevue);
+            this.tabOngletsApplication.Controls.Add(this.tabCommandesLivres);
+            this.tabOngletsApplication.Dock = System.Windows.Forms.DockStyle.Fill;
+
+            // Configuration du formulaire principal
+            this.Controls.Add(this.tabOngletsApplication);
+            this.Text = "Gestion des documents de la médiathèque";
+            this.ClientSize = new System.Drawing.Size(883, 900);
+        }
+    }
+}

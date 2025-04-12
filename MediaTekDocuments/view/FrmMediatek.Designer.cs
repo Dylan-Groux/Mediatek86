@@ -29,7 +29,7 @@ namespace MediaTekDocuments.view
         /// </summary>
         private void InitializeComponent()
         {
-            this.tabOngletsApplication = new System.Windows.Forms.TabControl();
+            this.TAB_COMMANDE = new System.Windows.Forms.TabControl();
             this.tabLivres = new System.Windows.Forms.TabPage();
             this.grpLivresInfos = new System.Windows.Forms.GroupBox();
             this.label59 = new System.Windows.Forms.Label();
@@ -178,7 +178,12 @@ namespace MediaTekDocuments.view
             this.label53 = new System.Windows.Forms.Label();
             this.label54 = new System.Windows.Forms.Label();
             this.btnReceptionRechercher = new System.Windows.Forms.Button();
-            this.tabOngletsApplication.SuspendLayout();
+            this.tabCommandes = new System.Windows.Forms.TabPage();
+            this.BT_CLEAR_CHOICE_SUIVI = new System.Windows.Forms.Button();
+            this.cbxCommandesSuivis = new System.Windows.Forms.ComboBox();
+            this.LABEL_CHOICE_SUIVI = new System.Windows.Forms.Label();
+            this.DATAGRID_COMMANDES = new System.Windows.Forms.DataGridView();
+            this.TAB_COMMANDE.SuspendLayout();
             this.tabLivres.SuspendLayout();
             this.grpLivresInfos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pcbLivresImage)).BeginInit();
@@ -201,21 +206,25 @@ namespace MediaTekDocuments.view
             ((System.ComponentModel.ISupportInitialize)(this.pcbReceptionExemplaireRevueImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvReceptionExemplairesListe)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pcbReceptionRevueImage)).BeginInit();
+            this.tabCommandes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES)).BeginInit();
             this.SuspendLayout();
             // 
-            // tabOngletsApplication
+            // TAB_COMMANDE
             // 
-            this.tabOngletsApplication.Controls.Add(this.tabLivres);
-            this.tabOngletsApplication.Controls.Add(this.tabDvd);
-            this.tabOngletsApplication.Controls.Add(this.tabRevues);
-            this.tabOngletsApplication.Controls.Add(this.tabReceptionRevue);
-            this.tabOngletsApplication.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabOngletsApplication.ItemSize = new System.Drawing.Size(49, 18);
-            this.tabOngletsApplication.Location = new System.Drawing.Point(0, 0);
-            this.tabOngletsApplication.Name = "tabOngletsApplication";
-            this.tabOngletsApplication.SelectedIndex = 0;
-            this.tabOngletsApplication.Size = new System.Drawing.Size(883, 659);
-            this.tabOngletsApplication.TabIndex = 0;
+            this.TAB_COMMANDE.Controls.Add(this.tabLivres);
+            this.TAB_COMMANDE.Controls.Add(this.tabDvd);
+            this.TAB_COMMANDE.Controls.Add(this.tabRevues);
+            this.TAB_COMMANDE.Controls.Add(this.tabReceptionRevue);
+            this.TAB_COMMANDE.Controls.Add(this.tabCommandes);
+            this.TAB_COMMANDE.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TAB_COMMANDE.ItemSize = new System.Drawing.Size(49, 18);
+            this.TAB_COMMANDE.Location = new System.Drawing.Point(0, 0);
+            this.TAB_COMMANDE.Name = "TAB_COMMANDE";
+            this.TAB_COMMANDE.SelectedIndex = 0;
+            this.TAB_COMMANDE.Size = new System.Drawing.Size(883, 659);
+            this.TAB_COMMANDE.TabIndex = 0;
+            this.TAB_COMMANDE.Enter += new System.EventHandler(this.TAB_COMMANDE_Enter);
             // 
             // tabLivres
             // 
@@ -1776,15 +1785,64 @@ namespace MediaTekDocuments.view
             this.btnReceptionRechercher.UseVisualStyleBackColor = true;
             this.btnReceptionRechercher.Click += new System.EventHandler(this.btnReceptionRechercher_Click);
             // 
+            // tabCommandes
+            // 
+            this.tabCommandes.Controls.Add(this.BT_CLEAR_CHOICE_SUIVI);
+            this.tabCommandes.Controls.Add(this.cbxCommandesSuivis);
+            this.tabCommandes.Controls.Add(this.LABEL_CHOICE_SUIVI);
+            this.tabCommandes.Controls.Add(this.DATAGRID_COMMANDES);
+            this.tabCommandes.Location = new System.Drawing.Point(4, 22);
+            this.tabCommandes.Name = "tabCommandes";
+            this.tabCommandes.Padding = new System.Windows.Forms.Padding(3);
+            this.tabCommandes.Size = new System.Drawing.Size(875, 633);
+            this.tabCommandes.TabIndex = 5;
+            this.tabCommandes.Text = "Commandes";
+            this.tabCommandes.UseVisualStyleBackColor = true;
+            // 
+            // BT_CLEAR_CHOICE_SUIVI
+            // 
+            this.BT_CLEAR_CHOICE_SUIVI.Location = new System.Drawing.Point(401, 20);
+            this.BT_CLEAR_CHOICE_SUIVI.Name = "BT_CLEAR_CHOICE_SUIVI";
+            this.BT_CLEAR_CHOICE_SUIVI.Size = new System.Drawing.Size(22, 22);
+            this.BT_CLEAR_CHOICE_SUIVI.TabIndex = 14;
+            this.BT_CLEAR_CHOICE_SUIVI.Text = "X";
+            this.BT_CLEAR_CHOICE_SUIVI.UseVisualStyleBackColor = true;
+            // 
+            // cbxCommandesSuivis
+            // 
+            this.cbxCommandesSuivis.FormattingEnabled = true;
+            this.cbxCommandesSuivis.Location = new System.Drawing.Point(188, 21);
+            this.cbxCommandesSuivis.Name = "cbxCommandesSuivis";
+            this.cbxCommandesSuivis.Size = new System.Drawing.Size(207, 21);
+            this.cbxCommandesSuivis.TabIndex = 13;
+            // 
+            // LABEL_CHOICE_SUIVI
+            // 
+            this.LABEL_CHOICE_SUIVI.AutoSize = true;
+            this.LABEL_CHOICE_SUIVI.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LABEL_CHOICE_SUIVI.Location = new System.Drawing.Point(28, 24);
+            this.LABEL_CHOICE_SUIVI.Name = "LABEL_CHOICE_SUIVI";
+            this.LABEL_CHOICE_SUIVI.Size = new System.Drawing.Size(148, 13);
+            this.LABEL_CHOICE_SUIVI.TabIndex = 12;
+            this.LABEL_CHOICE_SUIVI.Text = "Ou sélectionner le suivi :";
+            // 
+            // DATAGRID_COMMANDES
+            // 
+            this.DATAGRID_COMMANDES.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DATAGRID_COMMANDES.Location = new System.Drawing.Point(17, 152);
+            this.DATAGRID_COMMANDES.Name = "DATAGRID_COMMANDES";
+            this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(844, 200);
+            this.DATAGRID_COMMANDES.TabIndex = 0;
+            // 
             // FrmMediatek
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(883, 659);
-            this.Controls.Add(this.tabOngletsApplication);
+            this.Controls.Add(this.TAB_COMMANDE);
             this.Name = "FrmMediatek";
             this.Text = "Gestion des documents de la médiathèque";
-            this.tabOngletsApplication.ResumeLayout(false);
+            this.TAB_COMMANDE.ResumeLayout(false);
             this.tabLivres.ResumeLayout(false);
             this.grpLivresInfos.ResumeLayout(false);
             this.grpLivresInfos.PerformLayout();
@@ -1815,13 +1873,16 @@ namespace MediaTekDocuments.view
             ((System.ComponentModel.ISupportInitialize)(this.pcbReceptionExemplaireRevueImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvReceptionExemplairesListe)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pcbReceptionRevueImage)).EndInit();
+            this.tabCommandes.ResumeLayout(false);
+            this.tabCommandes.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabOngletsApplication;
+        private System.Windows.Forms.TabControl TAB_COMMANDE;
         private System.Windows.Forms.TabPage tabRevues;
         private System.Windows.Forms.TabPage tabLivres;
         private System.Windows.Forms.TabPage tabDvd;
@@ -1970,6 +2031,11 @@ namespace MediaTekDocuments.view
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.Label label58;
         private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.TabPage tabCommandes;
+        private System.Windows.Forms.DataGridView DATAGRID_COMMANDES;
+        private System.Windows.Forms.Button BT_CLEAR_CHOICE_SUIVI;
+        private System.Windows.Forms.ComboBox cbxCommandesSuivis;
+        private System.Windows.Forms.Label LABEL_CHOICE_SUIVI;
     }
 }
 
