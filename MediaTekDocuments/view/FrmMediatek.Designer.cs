@@ -1833,6 +1833,7 @@ namespace MediaTekDocuments.view
             this.DATAGRID_COMMANDES.Name = "DATAGRID_COMMANDES";
             this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(844, 200);
             this.DATAGRID_COMMANDES.TabIndex = 0;
+            this.DATAGRID_COMMANDES.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DATAGRID_COMMANDES_ColumnHeaderMouseClick);
             // 
             // FrmMediatek
             // 

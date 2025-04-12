@@ -1252,7 +1252,7 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgSuiviListe = new BindingSource();
         private readonly BindingSource bdgCommandesAvecSuiviListe = new BindingSource();
         private bool isAscending = true; //Gestion d'état dynamique pour triage
-
+        private List<CommandeSuiviDTO> commandeSuivis = new List<CommandeSuiviDTO>();
         /// <summary>
         /// Ouverture de l'onglet Commandes : 
         /// appel des méthodes pour remplir le datagrid des commandes et des combos (genre, rayon, public)
@@ -1263,6 +1263,7 @@ namespace MediaTekDocuments.view
         {
             lesCommandes = controller.GetAllCommandes();
             lesSuivi = controller.GetAllSuivi();
+            commandeSuivis = controller.GetCommandesSuivisDTO();   
             lesCommandesSuivies = new List<CommandeSuivie>();
             RemplirCommandesListeComplete();
         }
@@ -1273,26 +1274,111 @@ namespace MediaTekDocuments.view
         /// </summary>
         private void RemplirCommandesListeComplete()
         {
-            RemplirCommandeAvecSuivi();
+            RemplirCommandeAvecSuivi(commandeSuivis);
             VideLivresZones();
         }
 
-        private void RemplirCommandeAvecSuivi()
+        private void RemplirCommandeAvecSuivi(List<CommandeSuiviDTO> commandes)
         {
-            var commandesAvecSuivi = controller.GetCommandesSuivisDTO();
+            commandeSuivis = commandes;
 
-            // Log de test : vérifie les premières lignes
-            foreach (var item in commandesAvecSuivi.Take(5))
-            {
-                MessageBox.Show($"Commande: {item.CommandeId}, SuiviId: {item.SuiviId}, Statut: {item.StatutSuivi}");
-            }
-
+            // Log test
+            //foreach (var item in commandes.Take(5))
+            //{
+            //    MessageBox.Show($"Commande: {item.CommandeId}, SuiviId: {item.SuiviId}, Statut: {item.StatutSuivi}");
+            // }
+            
             DATAGRID_COMMANDES.DataSource = null;
-            DATAGRID_COMMANDES.DataSource = commandesAvecSuivi;
+            DATAGRID_COMMANDES.DataSource = commandeSuivis;
             DATAGRID_COMMANDES.Refresh();
         }
 
+
+
         #endregion
 
+        /// <summary>
+        /// Tri sur les colonnes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+
+        private void DATAGRID_COMMANDES_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            VideLivresZones();
+            string titreColonne = DATAGRID_COMMANDES.Columns[e.ColumnIndex].HeaderText;
+            List<CommandeSuiviDTO> sortedList = new List<CommandeSuiviDTO>();
+            switch (titreColonne)
+            {
+                case "CommandeId":
+                    if (isAscending)
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.CommandeId).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.CommandeId).ToList();
+                    }
+                    break;
+
+                case "DateCommande":
+                    if (isAscending) 
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.DateCommande).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.DateCommande).ToList();
+                    }
+                        break;
+
+                case "Montant":
+                    if (isAscending)
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.Montant).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.Montant).ToList();
+                    }
+                        break;
+
+                case "SuiviId":
+                    if (isAscending)
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.SuiviId).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.SuiviId).ToList();
+                    }
+                        break;
+
+                case "StatutSuivi":
+                    if (isAscending)
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.StatutSuivi).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.StatutSuivi).ToList();
+                    }
+                        break;
+                case "DateSuivi":
+                    if (isAscending) 
+                    {
+                        sortedList = commandeSuivis.OrderBy(o => o.DateSuivi).ToList();
+                    }
+                    else
+                    {
+                        sortedList = commandeSuivis.OrderByDescending(o => o.DateSuivi).ToList();
+                    }
+                    break;
+            }
+
+            isAscending = !isAscending;
+
+            RemplirCommandeAvecSuivi(sortedList);
+        }
     }
 }

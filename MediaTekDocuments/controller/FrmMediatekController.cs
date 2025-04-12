@@ -147,7 +147,7 @@ namespace MediaTekDocuments.controller
             var suivis = GetAllSuivi();
 
             // Log pour vérifier la taille des listes
-            MessageBox.Show($"Commandes : {commandes.Count}, Suivis : {suivis.Count}");
+            // MessageBox.Show($"Commandes : {commandes.Count}, Suivis : {suivis.Count}");
 
             // La jointure entre Commande et Suivi
             var result = from c in commandes
