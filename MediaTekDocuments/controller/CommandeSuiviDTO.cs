@@ -15,6 +15,20 @@ namespace MediaTekDocuments.controller
         public string SuiviId { get; set; }
         public int StatutSuivi { get; set; }
         public DateTime? DateSuivi { get; set; }
+    
+    public string LibelleStatutSuivi
+        {
+            get
+            {
+                switch (StatutSuivi)
+                {
+                    case 1: return "En cours";
+                    case 2: return "Livré";
+                    case 3: return "Disponible en points relais";
+                    case 4: return "Annulé";
+                    default: return "Inconnu";
+                }
+            }
+        }
     }
-
 }

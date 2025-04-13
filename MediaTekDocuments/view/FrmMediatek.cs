@@ -1292,15 +1292,57 @@ namespace MediaTekDocuments.view
         {
             commandeSuivis = commandes;
 
-            // Log test
-            //foreach (var item in commandes.Take(5))
-            //{
-            //    MessageBox.Show($"Commande: {item.CommandeId}, SuiviId: {item.SuiviId}, Statut: {item.StatutSuivi}");
-            // }
-            
+            // Réinitialise et recharge le DataGridView
             DATAGRID_COMMANDES.DataSource = null;
             DATAGRID_COMMANDES.DataSource = commandeSuivis;
-            DATAGRID_COMMANDES.Refresh();
+
+            #region protection saisit utilisateur
+            // Empêche la sélection de lignes entières
+            DATAGRID_COMMANDES.SelectionMode = DataGridViewSelectionMode.CellSelect;
+
+            // Empêche la sélection de plusieurs lignes
+            DATAGRID_COMMANDES.MultiSelect = false;
+
+            // Rend la grille en lecture seule
+            DATAGRID_COMMANDES.ReadOnly = true;
+
+            // Cache la colonne de sélection à gauche (avec les petites flèches)
+            DATAGRID_COMMANDES.RowHeadersVisible = false;
+
+            // Empêche l'ajout de nouvelles lignes
+            DATAGRID_COMMANDES.AllowUserToAddRows = false;
+
+            // Empêche la suppression de lignes
+            DATAGRID_COMMANDES.AllowUserToDeleteRows = false;
+
+            // Empêche la modification du redimensionnement manuel des colonnes
+            DATAGRID_COMMANDES.AllowUserToResizeColumns = false;
+
+            // Empêche la modification du redimensionnement manuel des lignes
+            DATAGRID_COMMANDES.AllowUserToResizeRows = false;
+            #endregion
+
+            // Masque les colonnes techniques
+            DATAGRID_COMMANDES.Columns["SuiviId"].Visible = false;
+            DATAGRID_COMMANDES.Columns["StatutSuivi"].Visible = false;
+
+            // Renomme les en-têtes
+            DATAGRID_COMMANDES.Columns["CommandeId"].HeaderText = "N° de la commande";
+            DATAGRID_COMMANDES.Columns["DateCommande"].HeaderText = "Date de la commande";
+            DATAGRID_COMMANDES.Columns["Montant"].HeaderText = "Montant (€)";
+            DATAGRID_COMMANDES.Columns["DateSuivi"].HeaderText = "Date de changement de suivi";
+            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].HeaderText = "Statut de suivi";
+
+            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DATAGRID_COMMANDES.Columns["CommandeId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DATAGRID_COMMANDES.Columns["DateSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
+            // Réorganise l'ordre des colonnes (facultatif)
+            DATAGRID_COMMANDES.Columns["CommandeId"].DisplayIndex = 1;
+            DATAGRID_COMMANDES.Columns["DateCommande"].DisplayIndex = 2;
+            DATAGRID_COMMANDES.Columns["Montant"].DisplayIndex = 3;
+            DATAGRID_COMMANDES.Columns["DateSuivi"].DisplayIndex = 4;
+            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].DisplayIndex = 5;
         }
 
         private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
@@ -1329,7 +1371,7 @@ namespace MediaTekDocuments.view
             List<CommandeSuiviDTO> sortedList = new List<CommandeSuiviDTO>();
             switch (titreColonne)
             {
-                case "CommandeId":
+                case "N° de la commande":
                     if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.CommandeId).ToList();
@@ -1340,7 +1382,7 @@ namespace MediaTekDocuments.view
                     }
                     break;
 
-                case "DateCommande":
+                case "Date de la commande":
                     if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.DateCommande).ToList();
@@ -1351,7 +1393,7 @@ namespace MediaTekDocuments.view
                     }
                     break;
 
-                case "Montant":
+                case "Montant (€)":
                     if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.Montant).ToList();
@@ -1373,17 +1415,17 @@ namespace MediaTekDocuments.view
                     }
                     break;
 
-                case "StatutSuivi":
+                case "Statut de suivi":
                     if (isAscending)
                     {
-                        sortedList = commandeSuivis.OrderBy(o => o.StatutSuivi).ToList();
+                        sortedList = commandeSuivis.OrderBy(o => o.LibelleStatutSuivi).ToList();
                     }
                     else
                     {
-                        sortedList = commandeSuivis.OrderByDescending(o => o.StatutSuivi).ToList();
+                        sortedList = commandeSuivis.OrderByDescending(o => o.LibelleStatutSuivi).ToList();
                     }
                     break;
-                case "DateSuivi":
+                case "Date de changement de suivi":
                     if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.DateSuivi).ToList();
@@ -1411,6 +1453,77 @@ namespace MediaTekDocuments.view
         {
             var testCommandes = new TestCommandesDocuments();
             testCommandes.TesterRecuperationCommandes();
+        }
+
+        private void AfficheCommandesInfos(string idDocument)
+        {
+            // Récupérer toutes les commandes associées à l'id_document
+            List<CommandesDocuments> commandesDocuments = controller.GetAllCommnadesDocuments();
+
+            // Filtrer les commandes pour récupérer celles qui correspondent à l'id_document
+            var commandesFiltrees = commandesDocuments.Where(c => c.id_document == idDocument).ToList();
+
+            // Afficher ces commandes dans un DataGridView ou autres contrôles
+            DATAGRID_COMMANDES_DOCUMENTS.DataSource = commandesFiltrees;
+
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].HeaderText = "N° de la commande";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commandedocument"].Visible = false;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_document"].HeaderText = "N° du document";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].HeaderText = "Nombres d'exemplaires";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["idLivreDvd"].Visible = false;
+
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].DisplayIndex = 1;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_documment"].DisplayIndex = 2;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].DisplayIndex = 3;
+        }
+
+
+
+        /// <summary>
+        /// Affichage des informations du livre sélectionné
+        /// </summary>
+        /// <param name="livre">le livre</param>
+        private void AfficheLivresInfosCommandes(Livre livre)
+        {
+            txbLivresCollection.Text = livre.Collection;
+            txbLivresImage.Text = livre.Image;
+            txbLivresIsbn.Text = livre.Isbn;
+            txbLivresNumero.Text = livre.Id;
+            txbLivresGenre.Text = livre.Genre;
+            txbLivresPublic.Text = livre.Public;
+            txbLivresRayon.Text = livre.Rayon;
+            txbLivresTitre.Text = livre.Titre;
+            string image = livre.Image;
+            try
+            {
+                pcbLivresImage.Image = Image.FromFile(image);
+            }
+            catch
+            {
+                pcbLivresImage.Image = null;
+            }
+        }
+
+
+        private void DATAGRID_LIST_COMMANDE_LIVRE_SelectionChanged(object sender, EventArgs e)
+        {
+            if (DATAGRID_LIST_COMMANDE_LIVRE.CurrentCell != null)
+            {
+                try
+                {
+                    Livre livre = (Livre)bdgLivresListe.List[bdgLivresListe.Position];
+                    AfficheLivresInfosCommandes(livre);
+                    AfficheCommandesInfos(livre.Id);
+                }
+                catch
+                {
+                    VideLivresZones();
+                }
+            }
+            else
+            {
+                VideLivresInfos();
+            }
         }
     }
 }
