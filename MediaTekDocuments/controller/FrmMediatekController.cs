@@ -167,5 +167,11 @@ namespace MediaTekDocuments.controller
             // Retourner le résultat sous forme de liste
             return result.ToList();
         }
+
+        public List<CommandesDocuments> GetAllCommnadesDocuments()
+        {
+            return access.GetAllCommnadesDocuments();
+        }
+
     }
 }

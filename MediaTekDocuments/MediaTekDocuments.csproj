@@ -70,6 +70,7 @@
     <Compile Include="controller\CommandeSuiviDTO.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="model\Commande.cs" />
+    <Compile Include="model\CommandesDocuments.cs" />
     <Compile Include="model\CommandeSuivi.cs" />
     <Compile Include="model\Suivi.cs" />
     <Compile Include="Scripts\Groupes.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="dal\Access.cs" />
     <Compile Include="Services\ExemplaireService.cs" />
     <Compile Include="Scripts\SuiviCommande.cs" />
+    <Compile Include="Test\TestTableApi\TestCommandesDocuments.cs" />
     <Compile Include="view\FrmMediatek.cs">
       <SubType>Form</SubType>
     </Compile>

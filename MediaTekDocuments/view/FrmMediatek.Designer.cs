@@ -183,6 +183,29 @@ namespace MediaTekDocuments.view
             this.cbxCommandesSuivis = new System.Windows.Forms.ComboBox();
             this.LABEL_CHOICE_SUIVI = new System.Windows.Forms.Label();
             this.DATAGRID_COMMANDES = new System.Windows.Forms.DataGridView();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label60 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.label61 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label62 = new System.Windows.Forms.Label();
+            this.label63 = new System.Windows.Forms.Label();
+            this.label64 = new System.Windows.Forms.Label();
+            this.label65 = new System.Windows.Forms.Label();
+            this.label66 = new System.Windows.Forms.Label();
+            this.label67 = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
+            this.label69 = new System.Windows.Forms.Label();
+            this.DATAGRID_LIST_COMMANDE_LIVRE = new System.Windows.Forms.DataGridView();
+            this.TEST_GETTALLCOMMANDESDOCUMENTS = new System.Windows.Forms.Button();
             this.TAB_COMMANDE.SuspendLayout();
             this.tabLivres.SuspendLayout();
             this.grpLivresInfos.SuspendLayout();
@@ -208,6 +231,9 @@ namespace MediaTekDocuments.view
             ((System.ComponentModel.ISupportInitialize)(this.pcbReceptionRevueImage)).BeginInit();
             this.tabCommandes.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_LIST_COMMANDE_LIVRE)).BeginInit();
             this.SuspendLayout();
             // 
             // TAB_COMMANDE
@@ -222,7 +248,7 @@ namespace MediaTekDocuments.view
             this.TAB_COMMANDE.Location = new System.Drawing.Point(0, 0);
             this.TAB_COMMANDE.Name = "TAB_COMMANDE";
             this.TAB_COMMANDE.SelectedIndex = 0;
-            this.TAB_COMMANDE.Size = new System.Drawing.Size(883, 659);
+            this.TAB_COMMANDE.Size = new System.Drawing.Size(883, 725);
             this.TAB_COMMANDE.TabIndex = 0;
             this.TAB_COMMANDE.Enter += new System.EventHandler(this.TAB_COMMANDE_Enter);
             // 
@@ -232,7 +258,7 @@ namespace MediaTekDocuments.view
             this.tabLivres.Controls.Add(this.grpLivresRecherche);
             this.tabLivres.Location = new System.Drawing.Point(4, 22);
             this.tabLivres.Name = "tabLivres";
-            this.tabLivres.Size = new System.Drawing.Size(875, 633);
+            this.tabLivres.Size = new System.Drawing.Size(875, 699);
             this.tabLivres.TabIndex = 2;
             this.tabLivres.Text = "Livres";
             this.tabLivres.UseVisualStyleBackColor = true;
@@ -1787,6 +1813,9 @@ namespace MediaTekDocuments.view
             // 
             // tabCommandes
             // 
+            this.tabCommandes.Controls.Add(this.TEST_GETTALLCOMMANDESDOCUMENTS);
+            this.tabCommandes.Controls.Add(this.DATAGRID_LIST_COMMANDE_LIVRE);
+            this.tabCommandes.Controls.Add(this.groupBox1);
             this.tabCommandes.Controls.Add(this.BT_CLEAR_CHOICE_SUIVI);
             this.tabCommandes.Controls.Add(this.cbxCommandesSuivis);
             this.tabCommandes.Controls.Add(this.LABEL_CHOICE_SUIVI);
@@ -1794,10 +1823,11 @@ namespace MediaTekDocuments.view
             this.tabCommandes.Location = new System.Drawing.Point(4, 22);
             this.tabCommandes.Name = "tabCommandes";
             this.tabCommandes.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCommandes.Size = new System.Drawing.Size(875, 633);
+            this.tabCommandes.Size = new System.Drawing.Size(875, 699);
             this.tabCommandes.TabIndex = 5;
             this.tabCommandes.Text = "Commandes";
             this.tabCommandes.UseVisualStyleBackColor = true;
+            this.tabCommandes.Click += new System.EventHandler(this.tabCommandes_Click);
             // 
             // BT_CLEAR_CHOICE_SUIVI
             // 
@@ -1829,17 +1859,254 @@ namespace MediaTekDocuments.view
             // DATAGRID_COMMANDES
             // 
             this.DATAGRID_COMMANDES.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DATAGRID_COMMANDES.Location = new System.Drawing.Point(17, 152);
+            this.DATAGRID_COMMANDES.Location = new System.Drawing.Point(17, 48);
             this.DATAGRID_COMMANDES.Name = "DATAGRID_COMMANDES";
-            this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(844, 200);
+            this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(406, 200);
             this.DATAGRID_COMMANDES.TabIndex = 0;
             this.DATAGRID_COMMANDES.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DATAGRID_COMMANDES_ColumnHeaderMouseClick);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label60);
+            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.textBox3);
+            this.groupBox1.Controls.Add(this.textBox4);
+            this.groupBox1.Controls.Add(this.textBox5);
+            this.groupBox1.Controls.Add(this.textBox6);
+            this.groupBox1.Controls.Add(this.textBox7);
+            this.groupBox1.Controls.Add(this.textBox8);
+            this.groupBox1.Controls.Add(this.textBox9);
+            this.groupBox1.Controls.Add(this.label61);
+            this.groupBox1.Controls.Add(this.pictureBox1);
+            this.groupBox1.Controls.Add(this.label62);
+            this.groupBox1.Controls.Add(this.label63);
+            this.groupBox1.Controls.Add(this.label64);
+            this.groupBox1.Controls.Add(this.label65);
+            this.groupBox1.Controls.Add(this.label66);
+            this.groupBox1.Controls.Add(this.label67);
+            this.groupBox1.Controls.Add(this.label68);
+            this.groupBox1.Controls.Add(this.label69);
+            this.groupBox1.Location = new System.Drawing.Point(10, 446);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(859, 245);
+            this.groupBox1.TabIndex = 20;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Informations détaillées";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label60.Location = new System.Drawing.Point(557, 11);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(49, 13);
+            this.label60.TabIndex = 33;
+            this.label60.Text = "Image :";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(441, 20);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 32;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(150, 195);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.ReadOnly = true;
+            this.textBox2.Size = new System.Drawing.Size(391, 20);
+            this.textBox2.TabIndex = 31;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(150, 170);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.Size = new System.Drawing.Size(207, 20);
+            this.textBox3.TabIndex = 30;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(150, 145);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.ReadOnly = true;
+            this.textBox4.Size = new System.Drawing.Size(207, 20);
+            this.textBox4.TabIndex = 29;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(150, 120);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
+            this.textBox5.Size = new System.Drawing.Size(207, 20);
+            this.textBox5.TabIndex = 28;
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(150, 95);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.ReadOnly = true;
+            this.textBox6.Size = new System.Drawing.Size(391, 20);
+            this.textBox6.TabIndex = 27;
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(150, 70);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.ReadOnly = true;
+            this.textBox7.Size = new System.Drawing.Size(207, 20);
+            this.textBox7.TabIndex = 26;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(150, 45);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.ReadOnly = true;
+            this.textBox8.Size = new System.Drawing.Size(391, 20);
+            this.textBox8.TabIndex = 25;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(150, 20);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.ReadOnly = true;
+            this.textBox9.Size = new System.Drawing.Size(100, 20);
+            this.textBox9.TabIndex = 24;
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label61.Location = new System.Drawing.Point(6, 120);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(49, 13);
+            this.label61.TabIndex = 22;
+            this.label61.Text = "Genre :";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(560, 27);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(284, 210);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 21;
+            this.pictureBox1.TabStop = false;
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label62.Location = new System.Drawing.Point(6, 145);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(50, 13);
+            this.label62.TabIndex = 19;
+            this.label62.Text = "Public :";
+            // 
+            // label63
+            // 
+            this.label63.AutoSize = true;
+            this.label63.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label63.Location = new System.Drawing.Point(6, 170);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(51, 13);
+            this.label63.TabIndex = 17;
+            this.label63.Text = "Rayon :";
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label64.Location = new System.Drawing.Point(6, 45);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(41, 13);
+            this.label64.TabIndex = 8;
+            this.label64.Text = "Titre :";
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label65.Location = new System.Drawing.Point(6, 20);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(135, 13);
+            this.label65.TabIndex = 5;
+            this.label65.Text = "Numéro de document :";
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label66.Location = new System.Drawing.Point(6, 70);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(67, 13);
+            this.label66.TabIndex = 9;
+            this.label66.Text = "Auteur(e) :";
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label67.Location = new System.Drawing.Point(6, 195);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(117, 13);
+            this.label67.TabIndex = 6;
+            this.label67.Text = "Chemin de l\'image :";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label68.Location = new System.Drawing.Point(6, 95);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(71, 13);
+            this.label68.TabIndex = 10;
+            this.label68.Text = "Collection :";
+            // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label69.Location = new System.Drawing.Point(357, 20);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(77, 13);
+            this.label69.TabIndex = 7;
+            this.label69.Text = "Code ISBN :";
+            // 
+            // DATAGRID_LIST_COMMANDE_LIVRE
+            // 
+            this.DATAGRID_LIST_COMMANDE_LIVRE.AllowUserToAddRows = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.AllowUserToDeleteRows = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.AllowUserToResizeColumns = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.AllowUserToResizeRows = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.Location = new System.Drawing.Point(8, 290);
+            this.DATAGRID_LIST_COMMANDE_LIVRE.MultiSelect = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.Name = "DATAGRID_LIST_COMMANDE_LIVRE";
+            this.DATAGRID_LIST_COMMANDE_LIVRE.ReadOnly = true;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.RowHeadersVisible = false;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DATAGRID_LIST_COMMANDE_LIVRE.Size = new System.Drawing.Size(859, 150);
+            this.DATAGRID_LIST_COMMANDE_LIVRE.TabIndex = 21;
+            // 
+            // TEST_GETTALLCOMMANDESDOCUMENTS
+            // 
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.Location = new System.Drawing.Point(497, 60);
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.Name = "TEST_GETTALLCOMMANDESDOCUMENTS";
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.Size = new System.Drawing.Size(324, 23);
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.TabIndex = 22;
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.Text = "TESTING GETALL COMMANDESDOCUMENTS";
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.UseVisualStyleBackColor = true;
+            this.TEST_GETTALLCOMMANDESDOCUMENTS.Click += new System.EventHandler(this.TEST_GETTALLCOMMANDESDOCUMENTS_Click);
             // 
             // FrmMediatek
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(883, 659);
+            this.ClientSize = new System.Drawing.Size(883, 725);
             this.Controls.Add(this.TAB_COMMANDE);
             this.Name = "FrmMediatek";
             this.Text = "Gestion des documents de la médiathèque";
@@ -1877,6 +2144,10 @@ namespace MediaTekDocuments.view
             this.tabCommandes.ResumeLayout(false);
             this.tabCommandes.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_LIST_COMMANDE_LIVRE)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2037,6 +2308,29 @@ namespace MediaTekDocuments.view
         private System.Windows.Forms.Button BT_CLEAR_CHOICE_SUIVI;
         private System.Windows.Forms.ComboBox cbxCommandesSuivis;
         private System.Windows.Forms.Label LABEL_CHOICE_SUIVI;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label62;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.Label label66;
+        private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.Label label69;
+        private System.Windows.Forms.DataGridView DATAGRID_LIST_COMMANDE_LIVRE;
+        private System.Windows.Forms.Button TEST_GETTALLCOMMANDESDOCUMENTS;
     }
 }
 

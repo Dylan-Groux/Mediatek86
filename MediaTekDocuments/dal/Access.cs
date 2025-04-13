@@ -43,7 +43,7 @@ namespace MediaTekDocuments.dal
         /// Méthode privée pour créer un singleton
         /// initialise l'accès à l'API
         /// </summary>
-        private Access()
+        public Access()
         {
             String authenticationString;
             try
@@ -270,6 +270,21 @@ namespace MediaTekDocuments.dal
             return lesSuivi;
         }
 
+        #endregion
+        #region CommandesDocuments
+
+        //Pour l'exploitation de la donnée par la suite (DGV - CBX  ...) 
+        public List<CommandesDocuments> GetAllCommnadesDocuments()
+        {
+            List<CommandesDocuments> lesCommandesDocuments = TraitementRecup<CommandesDocuments>(GET, "commandedocument", null);
+            return lesCommandesDocuments;
+        }
+
+        // Pour le test de la table 
+        public List<CommandesDocuments> GetAllCommandesDocuments()
+        {
+            return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
+        }
         #endregion
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.IO;
+using MediaTekDocuments.dal;
 
 namespace MediaTekDocuments.view
 
@@ -1246,6 +1247,7 @@ namespace MediaTekDocuments.view
 
         //Variables
         private List<Suivi> lesSuivi = new List<Suivi>();
+        private List<CommandesDocuments> lesCommandesDocuments = new List<CommandesDocuments>();
         List<CommandeSuivie> lesCommandesSuivies = new List<CommandeSuivie>();
         private List<Commande> lesCommandes = new List<Commande>();
         private readonly BindingSource bdgCommandesListe = new BindingSource();
@@ -1263,9 +1265,15 @@ namespace MediaTekDocuments.view
         {
             lesCommandes = controller.GetAllCommandes();
             lesSuivi = controller.GetAllSuivi();
+            lesCommandesDocuments = controller.GetAllCommnadesDocuments();
             commandeSuivis = controller.GetCommandesSuivisDTO();   
             lesCommandesSuivies = new List<CommandeSuivie>();
             RemplirCommandesListeComplete();
+            lesLivres = controller.GetAllLivres();
+            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
+            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
+            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
+
         }
 
         /// <summary>
@@ -1276,6 +1284,8 @@ namespace MediaTekDocuments.view
         {
             RemplirCommandeAvecSuivi(commandeSuivis);
             VideLivresZones();
+            //Remplissage de la DataGridView des Livres
+            RemplirLivresListeCommandes(lesLivres);
         }
 
         private void RemplirCommandeAvecSuivi(List<CommandeSuiviDTO> commandes)
@@ -1293,16 +1303,25 @@ namespace MediaTekDocuments.view
             DATAGRID_COMMANDES.Refresh();
         }
 
-
-
-        #endregion
+        private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
+        {
+            bdgLivresListe.DataSource = livresCommandes;
+            DATAGRID_LIST_COMMANDE_LIVRE.DataSource = bdgLivresListe;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["isbn"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idRayon"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idGenre"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idPublic"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["image"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["id"].DisplayIndex = 0;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["titre"].DisplayIndex = 1;
+        }
 
         /// <summary>
         /// Tri sur les colonnes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-
         private void DATAGRID_COMMANDES_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             VideLivresZones();
@@ -1322,7 +1341,7 @@ namespace MediaTekDocuments.view
                     break;
 
                 case "DateCommande":
-                    if (isAscending) 
+                    if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.DateCommande).ToList();
                     }
@@ -1330,7 +1349,7 @@ namespace MediaTekDocuments.view
                     {
                         sortedList = commandeSuivis.OrderByDescending(o => o.DateCommande).ToList();
                     }
-                        break;
+                    break;
 
                 case "Montant":
                     if (isAscending)
@@ -1341,7 +1360,7 @@ namespace MediaTekDocuments.view
                     {
                         sortedList = commandeSuivis.OrderByDescending(o => o.Montant).ToList();
                     }
-                        break;
+                    break;
 
                 case "SuiviId":
                     if (isAscending)
@@ -1352,7 +1371,7 @@ namespace MediaTekDocuments.view
                     {
                         sortedList = commandeSuivis.OrderByDescending(o => o.SuiviId).ToList();
                     }
-                        break;
+                    break;
 
                 case "StatutSuivi":
                     if (isAscending)
@@ -1363,9 +1382,9 @@ namespace MediaTekDocuments.view
                     {
                         sortedList = commandeSuivis.OrderByDescending(o => o.StatutSuivi).ToList();
                     }
-                        break;
+                    break;
                 case "DateSuivi":
-                    if (isAscending) 
+                    if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.DateSuivi).ToList();
                     }
@@ -1379,6 +1398,19 @@ namespace MediaTekDocuments.view
             isAscending = !isAscending;
 
             RemplirCommandeAvecSuivi(sortedList);
+        }
+
+        #endregion
+
+        private void tabCommandes_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TEST_GETTALLCOMMANDESDOCUMENTS_Click(object sender, EventArgs e)
+        {
+            var testCommandes = new TestCommandesDocuments();
+            testCommandes.TesterRecuperationCommandes();
         }
     }
 }
