@@ -32,5 +32,7 @@ namespace MediaTekDocuments.model
             this.idLivreDvd = idLivreDvd;
             this.id_commande = id_commande;
         }
+
+        public CommandesDocuments() { } 
     }
 }

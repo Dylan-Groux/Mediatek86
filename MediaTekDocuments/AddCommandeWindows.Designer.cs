@@ -29,19 +29,17 @@
         private void InitializeComponent()
         {
             this.PB_COMMANDE_PHOTO = new System.Windows.Forms.PictureBox();
-            this.LB_ID_LIVRE = new System.Windows.Forms.Label();
             this.LB_NUM_COMMANDE = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.LB_GP_ADD_COMMANDE = new System.Windows.Forms.Label();
+            this.TB_MONTANT_COMMANDE = new System.Windows.Forms.MaskedTextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.TB_NUM_COMMANDE = new System.Windows.Forms.MaskedTextBox();
-            this.TB_ID_LIVRE = new System.Windows.Forms.MaskedTextBox();
             this.BT_ADD_ONE_COMMANDE = new System.Windows.Forms.Button();
             this.BT_ADD_IMG_COMMANDE = new System.Windows.Forms.Button();
-            this.TB_TITLE_LIVRE = new System.Windows.Forms.MaskedTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.TB_DESC_LIVRE = new System.Windows.Forms.MaskedTextBox();
+            this.LB_ID_LIVRE = new System.Windows.Forms.Label();
+            this.TB_ID_LIVRE = new System.Windows.Forms.MaskedTextBox();
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE = new System.Windows.Forms.MaskedTextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.CB_GP_COMMANDE = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.PB_COMMANDE_PHOTO)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -56,15 +54,6 @@
             this.PB_COMMANDE_PHOTO.TabIndex = 1;
             this.PB_COMMANDE_PHOTO.TabStop = false;
             // 
-            // LB_ID_LIVRE
-            // 
-            this.LB_ID_LIVRE.Location = new System.Drawing.Point(3, 39);
-            this.LB_ID_LIVRE.Name = "LB_ID_LIVRE";
-            this.LB_ID_LIVRE.Size = new System.Drawing.Size(149, 23);
-            this.LB_ID_LIVRE.TabIndex = 5;
-            this.LB_ID_LIVRE.Text = "Id du livre :  ";
-            this.LB_ID_LIVRE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // LB_NUM_COMMANDE
             // 
             this.LB_NUM_COMMANDE.Location = new System.Drawing.Point(3, 12);
@@ -76,14 +65,12 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.CB_GP_COMMANDE);
-            this.panel1.Controls.Add(this.TB_DESC_LIVRE);
+            this.panel1.Controls.Add(this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.TB_TITLE_LIVRE);
+            this.panel1.Controls.Add(this.TB_MONTANT_COMMANDE);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.TB_ID_LIVRE);
             this.panel1.Controls.Add(this.TB_NUM_COMMANDE);
-            this.panel1.Controls.Add(this.LB_GP_ADD_COMMANDE);
             this.panel1.Controls.Add(this.LB_ID_LIVRE);
             this.panel1.Controls.Add(this.LB_NUM_COMMANDE);
             this.panel1.Location = new System.Drawing.Point(12, 253);
@@ -91,15 +78,23 @@
             this.panel1.Size = new System.Drawing.Size(295, 259);
             this.panel1.TabIndex = 6;
             // 
-            // LB_GP_ADD_COMMANDE
+            // TB_MONTANT_COMMANDE
             // 
-            this.LB_GP_ADD_COMMANDE.Location = new System.Drawing.Point(3, 66);
-            this.LB_GP_ADD_COMMANDE.Name = "LB_GP_ADD_COMMANDE";
-            this.LB_GP_ADD_COMMANDE.Size = new System.Drawing.Size(149, 23);
-            this.LB_GP_ADD_COMMANDE.TabIndex = 6;
-            this.LB_GP_ADD_COMMANDE.Text = "Groupe : ";
-            this.LB_GP_ADD_COMMANDE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.LB_GP_ADD_COMMANDE.Click += new System.EventHandler(this.label1_Click);
+            this.TB_MONTANT_COMMANDE.Location = new System.Drawing.Point(158, 43);
+            this.TB_MONTANT_COMMANDE.Name = "TB_MONTANT_COMMANDE";
+            this.TB_MONTANT_COMMANDE.Size = new System.Drawing.Size(123, 20);
+            this.TB_MONTANT_COMMANDE.TabIndex = 11;
+            this.TB_MONTANT_COMMANDE.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(3, 39);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(149, 23);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Montant de la commande :";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label1.Click += new System.EventHandler(this.label1_Click_1);
             // 
             // TB_NUM_COMMANDE
             // 
@@ -107,13 +102,6 @@
             this.TB_NUM_COMMANDE.Name = "TB_NUM_COMMANDE";
             this.TB_NUM_COMMANDE.Size = new System.Drawing.Size(123, 20);
             this.TB_NUM_COMMANDE.TabIndex = 7;
-            // 
-            // TB_ID_LIVRE
-            // 
-            this.TB_ID_LIVRE.Location = new System.Drawing.Point(158, 42);
-            this.TB_ID_LIVRE.Name = "TB_ID_LIVRE";
-            this.TB_ID_LIVRE.Size = new System.Drawing.Size(123, 20);
-            this.TB_ID_LIVRE.TabIndex = 8;
             // 
             // BT_ADD_ONE_COMMANDE
             // 
@@ -136,51 +124,37 @@
             this.BT_ADD_IMG_COMMANDE.UseVisualStyleBackColor = true;
             this.BT_ADD_IMG_COMMANDE.Click += new System.EventHandler(this.button1_Click);
             // 
-            // TB_TITLE_LIVRE
+            // LB_ID_LIVRE
             // 
-            this.TB_TITLE_LIVRE.Location = new System.Drawing.Point(158, 95);
-            this.TB_TITLE_LIVRE.Name = "TB_TITLE_LIVRE";
-            this.TB_TITLE_LIVRE.Size = new System.Drawing.Size(123, 20);
-            this.TB_TITLE_LIVRE.TabIndex = 11;
-            this.TB_TITLE_LIVRE.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
+            this.LB_ID_LIVRE.Location = new System.Drawing.Point(3, 66);
+            this.LB_ID_LIVRE.Name = "LB_ID_LIVRE";
+            this.LB_ID_LIVRE.Size = new System.Drawing.Size(149, 23);
+            this.LB_ID_LIVRE.TabIndex = 5;
+            this.LB_ID_LIVRE.Text = "Id du livre :  ";
+            this.LB_ID_LIVRE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // label1
+            // TB_ID_LIVRE
             // 
-            this.label1.Location = new System.Drawing.Point(3, 91);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(149, 23);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "Titre du livre";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.label1.Click += new System.EventHandler(this.label1_Click_1);
+            this.TB_ID_LIVRE.Location = new System.Drawing.Point(158, 69);
+            this.TB_ID_LIVRE.Name = "TB_ID_LIVRE";
+            this.TB_ID_LIVRE.Size = new System.Drawing.Size(123, 20);
+            this.TB_ID_LIVRE.TabIndex = 8;
             // 
-            // TB_DESC_LIVRE
+            // NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE
             // 
-            this.TB_DESC_LIVRE.Location = new System.Drawing.Point(11, 143);
-            this.TB_DESC_LIVRE.Name = "TB_DESC_LIVRE";
-            this.TB_DESC_LIVRE.Size = new System.Drawing.Size(260, 20);
-            this.TB_DESC_LIVRE.TabIndex = 13;
-            this.TB_DESC_LIVRE.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox2_MaskInputRejected);
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Location = new System.Drawing.Point(158, 95);
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Name = "NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE";
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Size = new System.Drawing.Size(123, 20);
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.TabIndex = 13;
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(8, 117);
+            this.label2.Location = new System.Drawing.Point(3, 92);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(149, 23);
             this.label2.TabIndex = 12;
-            this.label2.Text = "Description du livre";
+            this.label2.Text = "Nombres d\'Exemplaires :";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // CB_GP_COMMANDE
-            // 
-            this.CB_GP_COMMANDE.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CB_GP_COMMANDE.FormattingEnabled = true;
-            this.CB_GP_COMMANDE.Location = new System.Drawing.Point(158, 68);
-            this.CB_GP_COMMANDE.Name = "CB_GP_COMMANDE";
-            this.CB_GP_COMMANDE.Size = new System.Drawing.Size(123, 21);
-            this.CB_GP_COMMANDE.TabIndex = 14;
-            this.CB_GP_COMMANDE.SelectedIndexChanged += new System.EventHandler(this.CB_GP_COMMANDE_SelectedIndexChanged);
             // 
             // AddCommandeWindows
             // 
@@ -204,18 +178,16 @@
         #endregion
 
         private System.Windows.Forms.PictureBox PB_COMMANDE_PHOTO;
-        private System.Windows.Forms.Label LB_ID_LIVRE;
         private System.Windows.Forms.Label LB_NUM_COMMANDE;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label LB_GP_ADD_COMMANDE;
-        private System.Windows.Forms.MaskedTextBox TB_ID_LIVRE;
         private System.Windows.Forms.MaskedTextBox TB_NUM_COMMANDE;
         private System.Windows.Forms.Button BT_ADD_ONE_COMMANDE;
         private System.Windows.Forms.Button BT_ADD_IMG_COMMANDE;
-        private System.Windows.Forms.MaskedTextBox TB_TITLE_LIVRE;
+        private System.Windows.Forms.MaskedTextBox TB_MONTANT_COMMANDE;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.MaskedTextBox TB_DESC_LIVRE;
+        private System.Windows.Forms.MaskedTextBox NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox CB_GP_COMMANDE;
+        private System.Windows.Forms.MaskedTextBox TB_ID_LIVRE;
+        private System.Windows.Forms.Label LB_ID_LIVRE;
     }
 }

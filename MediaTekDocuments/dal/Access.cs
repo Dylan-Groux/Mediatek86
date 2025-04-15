@@ -286,5 +286,71 @@ namespace MediaTekDocuments.dal
             return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
         }
         #endregion
+
+        /// <summary>
+        /// Insertion d'une commande en base de données
+        /// </summary>
+        /// <param name="commande">Commande à insérer</param>
+        /// <returns>true si l'insertion réussit</returns>
+        public bool CreerCommande(Commande commande)
+        {
+            string jsonCommande = JsonConvert.SerializeObject(commande, new CustomDateTimeConverter());
+            MessageBox.Show("JSON Commande envoyée : " + jsonCommande);
+            try
+            {
+                List<Commande> liste = TraitementRecup<Commande>(POST, "commande", "champs=" + jsonCommande);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur lors de l'insertion de la commande : " + ex.Message);
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Insertion d'un suivi en base de données
+        /// </summary>
+        /// <param name="suivi">Suivi à insérer</param>
+        /// <returns>true si l'insertion réussit</returns>
+        public bool CreerSuivi(Suivi suivi)
+        {
+            string jsonSuivi = JsonConvert.SerializeObject(suivi, new CustomDateTimeConverter());
+            MessageBox.Show("JSON Commande envoyée : " + jsonSuivi);
+            try
+            {
+                List<Suivi> liste = TraitementRecup<Suivi>(POST, "suivi", "champs=" + jsonSuivi);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de l'insertion du suivi : " + ex.Message);
+                MessageBox.Show("Données envoyées : " + jsonSuivi);
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Insertion d'une donnée de CommandesDocuments en base de données
+        /// </summary>
+        /// <param name="commandedocument">CommandesDocuments à insérer</param>
+        /// <returns>true si l'insertion réussit</returns>
+        public bool CreerCommandeDocument(CommandesDocuments commandedocument)
+        {
+            string jsonCommandesDocuments = JsonConvert.SerializeObject(commandedocument, new CustomDateTimeConverter());
+            MessageBox.Show("JSON Commande envoyée : " + jsonCommandesDocuments);
+            try
+            {
+                List<CommandesDocuments> liste = TraitementRecup<CommandesDocuments>(POST, "commandedocument", "champs=" + jsonCommandesDocuments);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur lors de l'insertion de la commande : " + ex.Message);
+            }
+            return false;
+        }
     }
 }

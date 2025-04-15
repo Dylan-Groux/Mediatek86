@@ -29,5 +29,7 @@ namespace MediaTekDocuments.model
             this.IdCommande = id_commande;
             this.DateSuivi = date_suivi;
         }
+
+        public Suivi() { }  
     }
 }

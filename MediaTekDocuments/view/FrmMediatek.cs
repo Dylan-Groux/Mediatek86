@@ -7,6 +7,9 @@ using System.Linq;
 using System.Drawing;
 using System.IO;
 using MediaTekDocuments.dal;
+using System.ComponentModel.Design;
+using System.Xml.Linq;
+using MediaTekDocuments;
 
 namespace MediaTekDocuments.view
 
@@ -46,6 +49,15 @@ namespace MediaTekDocuments.view
             {
                 cbx.SelectedIndex = -1;
             }
+        }
+        private void DATAGRID_COMMANDES_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Ignore proprement l’erreur sans popup
+            e.ThrowException = false;
+            e.Cancel = true;
+
+            // (Optionnel) Tu peux logger si tu veux déboguer plus tard
+            // Console.WriteLine($"Erreur silencieuse DataGridView : {e.Exception.Message}");
         }
         #endregion
 
@@ -128,7 +140,7 @@ namespace MediaTekDocuments.view
         /// <param name="e"></param>
         private void TxbLivresTitreRecherche_TextChanged(object sender, EventArgs e)
         {
-            if (!txbLivresTitreRecherche.Text.Equals(""))
+            if (!txbLivresTitreRecherche.Text.ToLower().Equals(""))
             {
                 cbxLivresGenres.SelectedIndex = -1;
                 cbxLivresRayons.SelectedIndex = -1;
@@ -324,7 +336,7 @@ namespace MediaTekDocuments.view
             cbxLivresRayons.SelectedIndex = -1;
             cbxLivresPublics.SelectedIndex = -1;
             txbLivresNumRecherche.Text = "";
-            txbLivresTitreRecherche.Text = "";
+
         }
 
         /// <summary>
@@ -1254,7 +1266,11 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgSuiviListe = new BindingSource();
         private readonly BindingSource bdgCommandesAvecSuiviListe = new BindingSource();
         private bool isAscending = true; //Gestion d'état dynamique pour triage
+
         private List<CommandeSuiviDTO> commandeSuivis = new List<CommandeSuiviDTO>();
+        private List<CommandeSuiviDTO> commandeSuivisBase;
+
+
         /// <summary>
         /// Ouverture de l'onglet Commandes : 
         /// appel des méthodes pour remplir le datagrid des commandes et des combos (genre, rayon, public)
@@ -1266,9 +1282,11 @@ namespace MediaTekDocuments.view
             lesCommandes = controller.GetAllCommandes();
             lesSuivi = controller.GetAllSuivi();
             lesCommandesDocuments = controller.GetAllCommnadesDocuments();
-            commandeSuivis = controller.GetCommandesSuivisDTO();   
-            lesCommandesSuivies = new List<CommandeSuivie>();
+
+            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+            commandeSuivis = new List<CommandeSuiviDTO>(commandeSuivisBase);
             RemplirCommandesListeComplete();
+
             lesLivres = controller.GetAllLivres();
             RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
             RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
@@ -1277,17 +1295,36 @@ namespace MediaTekDocuments.view
         }
 
         /// <summary>
+        /// Vide les zones d'affichage des informations liées à une commande
+        /// </summary>
+        //private void ViderCommandeInfos()
+        //{
+        //   txbCommandeNumero.Text = "";
+        //  txbCommandeDate.Text = "";
+        // txbCommandeMontant.Text = "";
+        //txbCommandeStatutSuivi.Text = "";
+        //txbCommandeDateSuivi.Text = "";
+        //}
+
+        /// <summary>
         /// Affichage de la liste complète des Commandes
         /// et annulation de toutes les recherches et filtres
         /// </summary>
         private void RemplirCommandesListeComplete()
         {
+            commandeSuivis = new List<CommandeSuiviDTO>(commandeSuivisBase);
             RemplirCommandeAvecSuivi(commandeSuivis);
             VideLivresZones();
             //Remplissage de la DataGridView des Livres
             RemplirLivresListeCommandes(lesLivres);
         }
 
+        #region "Liste des commandes en cours"
+
+        /// <summary>
+        /// Méthode de remplissge et gestion de l'affichage de la Dgv
+        /// </summary>
+        /// <param name="commandes"></param>
         private void RemplirCommandeAvecSuivi(List<CommandeSuiviDTO> commandes)
         {
             commandeSuivis = commandes;
@@ -1343,20 +1380,7 @@ namespace MediaTekDocuments.view
             DATAGRID_COMMANDES.Columns["Montant"].DisplayIndex = 3;
             DATAGRID_COMMANDES.Columns["DateSuivi"].DisplayIndex = 4;
             DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].DisplayIndex = 5;
-        }
 
-        private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
-        {
-            bdgLivresListe.DataSource = livresCommandes;
-            DATAGRID_LIST_COMMANDE_LIVRE.DataSource = bdgLivresListe;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["isbn"].Visible = false;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idRayon"].Visible = false;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idGenre"].Visible = false;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idPublic"].Visible = false;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["image"].Visible = false;
-            DATAGRID_LIST_COMMANDE_LIVRE.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["id"].DisplayIndex = 0;
-            DATAGRID_LIST_COMMANDE_LIVRE.Columns["titre"].DisplayIndex = 1;
         }
 
         /// <summary>
@@ -1442,69 +1466,130 @@ namespace MediaTekDocuments.view
             RemplirCommandeAvecSuivi(sortedList);
         }
 
-        #endregion
-
-        private void tabCommandes_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Permet de recherche par ID de commande dans la TextBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TXB_SEARCH_NUM_COMMANDE_TextChanged(object sender, EventArgs e)
         {
+            string saisie = TXB_SEARCH_NUM_COMMANDE.Text.Trim().ToLower();
 
+            if (!string.IsNullOrEmpty(saisie))
+            {
+                var commandesTrouvees = commandeSuivisBase
+                    .FindAll(x => x.CommandeId.ToLower().Contains(saisie));
+
+                RemplirCommandeAvecSuivi(commandesTrouvees);
+            }
+            else
+            {
+                RemplirCommandesListeComplete();
+            }
         }
 
-        private void TEST_GETTALLCOMMANDESDOCUMENTS_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Supprime le text dans la TextBox 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BT_CLEAR_CHOICE_COMMANDES_ID_Click(object sender, EventArgs e)
         {
-            var testCommandes = new TestCommandesDocuments();
-            testCommandes.TesterRecuperationCommandes();
+            this.TXB_SEARCH_NUM_COMMANDE.Text = "";
+            RemplirCommandeAvecSuivi(commandeSuivis);
         }
 
-        private void AfficheCommandesInfos(string idDocument)
+        private void TXB_SEARCH_NUM_COMMANDE_Click(object sender, EventArgs e)
         {
-            // Récupérer toutes les commandes associées à l'id_document
-            List<CommandesDocuments> commandesDocuments = controller.GetAllCommnadesDocuments();
-
-            // Filtrer les commandes pour récupérer celles qui correspondent à l'id_document
-            var commandesFiltrees = commandesDocuments.Where(c => c.id_document == idDocument).ToList();
-
-            // Afficher ces commandes dans un DataGridView ou autres contrôles
-            DATAGRID_COMMANDES_DOCUMENTS.DataSource = commandesFiltrees;
-
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].HeaderText = "N° de la commande";
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commandedocument"].Visible = false;
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_document"].HeaderText = "N° du document";
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].HeaderText = "Nombres d'exemplaires";
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["idLivreDvd"].Visible = false;
-
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].DisplayIndex = 1;
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_documment"].DisplayIndex = 2;
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].DisplayIndex = 3;
+            this.TXB_SEARCH_NUM_COMMANDE.Text = "";
+            RemplirCommandeAvecSuivi(commandeSuivis);
         }
 
+        #endregion 
+
+        #region "Liste des livres disponibles"
+        /// <summary>
+        /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
+        /// </summary>
+        /// <param name="livresCommandes"></param>
+        private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
+        {
+            bdgLivresListe.DataSource = livresCommandes;
+            DATAGRID_LIST_COMMANDE_LIVRE.DataSource = bdgLivresListe;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["isbn"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idRayon"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idGenre"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["idPublic"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["image"].Visible = false;
+            DATAGRID_LIST_COMMANDE_LIVRE.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["id"].DisplayIndex = 0;
+            DATAGRID_LIST_COMMANDE_LIVRE.Columns["titre"].DisplayIndex = 1;
+        }
+
+        /// <summary>
+        /// Tri sur les colonnes de la Dgv
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DATAGRID_LIST_COMMANDE_LIVRE_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            VideLivresZones();
+            string titreColonne = dgvLivresListe.Columns[e.ColumnIndex].HeaderText;
+            List<Livre> sortedList = new List<Livre>();
+            switch (titreColonne)
+            {
+                case "Id":
+                    sortedList = lesLivres.OrderBy(o => o.Id).ToList();
+                    break;
+                case "Titre":
+                    sortedList = lesLivres.OrderBy(o => o.Titre).ToList();
+                    break;
+                case "Collection":
+                    sortedList = lesLivres.OrderBy(o => o.Collection).ToList();
+                    break;
+                case "Auteur":
+                    sortedList = lesLivres.OrderBy(o => o.Auteur).ToList();
+                    break;
+                case "Genre":
+                    sortedList = lesLivres.OrderBy(o => o.Genre).ToList();
+                    break;
+                case "Public":
+                    sortedList = lesLivres.OrderBy(o => o.Public).ToList();
+                    break;
+                case "Rayon":
+                    sortedList = lesLivres.OrderBy(o => o.Rayon).ToList();
+                    break;
+            }
+            RemplirLivresListe(sortedList);
+        }
+
+        /// <summary>
+        /// Recherche et affichage des livres dont le titre matche acec la saisie.
+        /// Cette procédure est exécutée à chaque ajout ou suppression de caractère
+        /// dans le textBox de saisie.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TXB_SEARCH_TITILE_LIVRE_TextChanged(object sender, EventArgs e)
+        {
+            if (!TXB_SEARCH_TITILE_LIVRE.Text.ToLower().Equals(""))
+            {
+                List<Livre> lesLivresParTitre;
+                lesLivresParTitre = lesLivres.FindAll(x => x.Titre.ToLower().Contains(TXB_SEARCH_TITILE_LIVRE.Text.ToLower()));
+                RemplirLivresListe(lesLivresParTitre);
+            }
+            else
+            {
+                RemplirLivresListeComplete();
+            }
+        }
 
 
         /// <summary>
-        /// Affichage des informations du livre sélectionné
+        /// Syteme de recherche par titre d'un livre
         /// </summary>
-        /// <param name="livre">le livre</param>
-        private void AfficheLivresInfosCommandes(Livre livre)
-        {
-            txbLivresCollection.Text = livre.Collection;
-            txbLivresImage.Text = livre.Image;
-            txbLivresIsbn.Text = livre.Isbn;
-            txbLivresNumero.Text = livre.Id;
-            txbLivresGenre.Text = livre.Genre;
-            txbLivresPublic.Text = livre.Public;
-            txbLivresRayon.Text = livre.Rayon;
-            txbLivresTitre.Text = livre.Titre;
-            string image = livre.Image;
-            try
-            {
-                pcbLivresImage.Image = Image.FromFile(image);
-            }
-            catch
-            {
-                pcbLivresImage.Image = null;
-            }
-        }
-
-
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DATAGRID_LIST_COMMANDE_LIVRE_SelectionChanged(object sender, EventArgs e)
         {
             if (DATAGRID_LIST_COMMANDE_LIVRE.CurrentCell != null)
@@ -1524,6 +1609,138 @@ namespace MediaTekDocuments.view
             {
                 VideLivresInfos();
             }
+        }
+
+        #endregion
+
+        #region "Informations des commandes en cours pour le livre"
+        //Variables
+        private string currentIdDocument; // à définir dans AfficheCommandesInfos
+
+        /// <summary>
+        /// Affichage et remplissage de la Dgv 
+        /// </summary>
+        /// <param name="idDocument"></param>
+        private void AfficheCommandesInfos(string idDocument)
+        {
+            currentIdDocument = idDocument;
+
+            List<CommandesDocuments>  commandesDocuments = controller.GetAllCommnadesDocuments(); 
+            // Récupérer toutes les commandes associées à l'id_document
+            commandesDocuments = controller.GetAllCommnadesDocuments();
+
+            // Filtrer les commandes pour récupérer celles qui correspondent à l'id_document
+            var commandesFiltrees = commandesDocuments.Where(c => c.id_document == idDocument).ToList();
+
+            // Afficher ces commandes dans un DataGridView ou autres contrôles
+            DATAGRID_COMMANDES_DOCUMENTS.DataSource = commandesFiltrees;
+
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].HeaderText = "N° de la commande";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commandedocument"].Visible = false;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_document"].HeaderText = "N° du document";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].HeaderText = "Nombres d'exemplaires";
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["idLivreDvd"].Visible = false;
+
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].DisplayIndex = 1;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_documment"].DisplayIndex = 2;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].DisplayIndex = 3;
+        }
+
+        private List<CommandesDocuments> GetCommandesFiltreesEtTriees(string idDocument, string colonne, bool triAscendant)
+        {
+            // Récupérer toutes les commandes
+            var toutesLesCommandes = controller.GetAllCommnadesDocuments();
+
+            // Filtrer par id_document
+            var commandesFiltrees = toutesLesCommandes
+                .Where(c => c.id_document == idDocument)
+                .ToList();
+
+            // Appliquer le tri selon la colonne
+            switch (colonne)
+            {
+                case "N° de la commande":
+                    return triAscendant
+                        ? commandesFiltrees.OrderBy(c => c.id_commande).ToList()
+                        : commandesFiltrees.OrderByDescending(c => c.id_commande).ToList();
+
+                case "N° du document":
+                    return triAscendant
+                        ? commandesFiltrees.OrderBy(c => c.id_document).ToList()
+                        : commandesFiltrees.OrderByDescending(c => c.id_document).ToList();
+
+                case "Nombres d'exemplaires":
+                    return triAscendant
+                        ? commandesFiltrees.OrderBy(c => c.nbExemplaire).ToList()
+                        : commandesFiltrees.OrderByDescending(c => c.nbExemplaire).ToList();
+
+                default:
+                    return commandesFiltrees; // tri non pris en charge
+            }
+        }
+
+        /// <summary>
+        /// Tri sur les colonnes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DATAGRID_COMMANDES_DOCUMENTS_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string titreColonne = DATAGRID_COMMANDES_DOCUMENTS.Columns[e.ColumnIndex].HeaderText;
+
+            var listeTriee = GetCommandesFiltreesEtTriees(currentIdDocument, titreColonne, isAscending);
+            isAscending = !isAscending;
+
+            // Met à jour le DataGridView
+            DATAGRID_COMMANDES_DOCUMENTS.DataSource = listeTriee;
+        }
+
+        /// <summary>
+        /// Affichage des informations du livre sélectionné
+        /// </summary>
+        /// <param name="livre">le livre</param>
+        private void AfficheLivresInfosCommandes(Livre livre)
+        {
+            txbLivresCommandesCollection.Text = livre.Collection;
+            txbLivresCommandesIsbn.Text = livre.Isbn;
+            txbLivresCommandesNumero.Text = livre.Id;
+            txbLivresCommandesGenre.Text = livre.Genre;
+            txbLivresCommandesPublic.Text = livre.Public;
+            txbLivresCommandesRayon.Text = livre.Rayon;
+            txbLivresCommandesTitre.Text = livre.Titre;
+            txbLivresCommandesAuteur.Text = livre.Auteur;
+            string image = livre.Image;
+            try
+            {
+                pcbLivresImage.Image = Image.FromFile(image);
+            }
+            catch
+            {
+                pcbLivresImage.Image = null;
+            }
+        }
+        #endregion
+
+        #region Test méthode de l'onglet "Commandes des livres"
+        //Debug Boutton pour la table Suivi
+        private void TEST_GETTALLCOMMANDESDOCUMENTS_Click(object sender, EventArgs e)
+        {
+            var testCommandes = new TestCommandesDocuments();
+            testCommandes.TesterRecuperationCommandes();
+        }
+
+        #endregion
+
+        #region newcommande formulaire
+
+        #endregion
+
+        #endregion
+
+        private void BT_ADD_NEW_COMMANDE_Click(object sender, EventArgs e)
+        {
+            AddCommandeWindows addCommandeWindonws = new AddCommandeWindows();
+            addCommandeWindonws.Show();
         }
     }
 }

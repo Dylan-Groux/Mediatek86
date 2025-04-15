@@ -135,7 +135,7 @@ namespace MediaTekDocuments.controller
             if (commande != null)
             {
                 // Récupérer tous les suivis associés à cette commande (tu peux le faire via une jointure)
-                commande.Suivis = GetAllSuivi().Where(s => s.IdCommande == commande.Id).ToList();
+                var suivis = GetAllSuivi().Where(s => s.IdCommande == commande.Id).ToList();
             }
 
             return commande;
@@ -160,8 +160,8 @@ namespace MediaTekDocuments.controller
                              Montant = c.Montant,
                              // Vérifier si 's' est null avant d'accéder à ses propriétés
                              SuiviId = s != null ? s.id_suivi : null,
-                             DateSuivi = s.DateSuivi,
-                             StatutSuivi = s.Status // Gestion du cas où 's' est null
+                             DateSuivi = s?.DateSuivi,
+                             StatutSuivi = s?.Status ?? -1 // Gestion du cas où 's' est null
                          };
 
             // Retourner le résultat sous forme de liste
@@ -171,6 +171,43 @@ namespace MediaTekDocuments.controller
         public List<CommandesDocuments> GetAllCommnadesDocuments()
         {
             return access.GetAllCommnadesDocuments();
+        }
+
+
+        /// <summary>
+        /// Crée une nouvelle commande dans la BDD
+        /// </summary>
+        /// <param name="commande"></param>
+        /// <returns></returns>
+        public bool CreerCommande(Commande commande)
+        {
+            return access.CreerCommande(commande);
+        }
+
+
+
+
+        /// <summary>
+        /// Crée une nouvelle donnée de suivi dans la BDD
+        /// </summary>
+        /// <param name="suivi"></param>
+        /// <returns></returns>
+        public bool CreerSuivi(Suivi suivi)
+        {
+            return access.CreerSuivi(suivi);
+        }
+
+
+
+
+        /// <summary>
+        /// Crée une nouvelle donnée de CommandesDocuments dans la BDD
+        /// </summary>
+        /// <param name="commandedocument"></param>
+        /// <returns></returns>
+        public bool CreerCommandeDocument(CommandesDocuments commandedocument)
+        {
+            return access.CreerCommandeDocument(commandedocument);
         }
 
     }
