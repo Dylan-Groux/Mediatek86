@@ -29,17 +29,15 @@
         private void InitializeComponent()
         {
             this.PB_COMMANDE_PHOTO = new System.Windows.Forms.PictureBox();
-            this.LB_NUM_COMMANDE = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.TB_MONTANT_COMMANDE = new System.Windows.Forms.MaskedTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.TB_NUM_COMMANDE = new System.Windows.Forms.MaskedTextBox();
-            this.BT_ADD_ONE_COMMANDE = new System.Windows.Forms.Button();
-            this.BT_ADD_IMG_COMMANDE = new System.Windows.Forms.Button();
-            this.LB_ID_LIVRE = new System.Windows.Forms.Label();
-            this.TB_ID_LIVRE = new System.Windows.Forms.MaskedTextBox();
             this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE = new System.Windows.Forms.MaskedTextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.TB_MONTANT_COMMANDE = new System.Windows.Forms.MaskedTextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.TB_ID_LIVRE = new System.Windows.Forms.MaskedTextBox();
+            this.LB_ID_LIVRE = new System.Windows.Forms.Label();
+            this.BT_ADD_ONE_COMMANDE = new System.Windows.Forms.Button();
+            this.BT_ADD_IMG_COMMANDE = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PB_COMMANDE_PHOTO)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -54,15 +52,6 @@
             this.PB_COMMANDE_PHOTO.TabIndex = 1;
             this.PB_COMMANDE_PHOTO.TabStop = false;
             // 
-            // LB_NUM_COMMANDE
-            // 
-            this.LB_NUM_COMMANDE.Location = new System.Drawing.Point(3, 12);
-            this.LB_NUM_COMMANDE.Name = "LB_NUM_COMMANDE";
-            this.LB_NUM_COMMANDE.Size = new System.Drawing.Size(149, 23);
-            this.LB_NUM_COMMANDE.TabIndex = 4;
-            this.LB_NUM_COMMANDE.Text = "Numéro de commande :  ";
-            this.LB_NUM_COMMANDE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE);
@@ -70,13 +59,27 @@
             this.panel1.Controls.Add(this.TB_MONTANT_COMMANDE);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.TB_ID_LIVRE);
-            this.panel1.Controls.Add(this.TB_NUM_COMMANDE);
             this.panel1.Controls.Add(this.LB_ID_LIVRE);
-            this.panel1.Controls.Add(this.LB_NUM_COMMANDE);
             this.panel1.Location = new System.Drawing.Point(12, 253);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(295, 259);
             this.panel1.TabIndex = 6;
+            // 
+            // NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE
+            // 
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Location = new System.Drawing.Point(158, 95);
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Name = "NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE";
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Size = new System.Drawing.Size(123, 20);
+            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(3, 92);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(149, 23);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Nombres d\'Exemplaires :";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // TB_MONTANT_COMMANDE
             // 
@@ -96,12 +99,21 @@
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.label1.Click += new System.EventHandler(this.label1_Click_1);
             // 
-            // TB_NUM_COMMANDE
+            // TB_ID_LIVRE
             // 
-            this.TB_NUM_COMMANDE.Location = new System.Drawing.Point(158, 16);
-            this.TB_NUM_COMMANDE.Name = "TB_NUM_COMMANDE";
-            this.TB_NUM_COMMANDE.Size = new System.Drawing.Size(123, 20);
-            this.TB_NUM_COMMANDE.TabIndex = 7;
+            this.TB_ID_LIVRE.Location = new System.Drawing.Point(158, 69);
+            this.TB_ID_LIVRE.Name = "TB_ID_LIVRE";
+            this.TB_ID_LIVRE.Size = new System.Drawing.Size(123, 20);
+            this.TB_ID_LIVRE.TabIndex = 8;
+            // 
+            // LB_ID_LIVRE
+            // 
+            this.LB_ID_LIVRE.Location = new System.Drawing.Point(3, 66);
+            this.LB_ID_LIVRE.Name = "LB_ID_LIVRE";
+            this.LB_ID_LIVRE.Size = new System.Drawing.Size(149, 23);
+            this.LB_ID_LIVRE.TabIndex = 5;
+            this.LB_ID_LIVRE.Text = "Id du livre :  ";
+            this.LB_ID_LIVRE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // BT_ADD_ONE_COMMANDE
             // 
@@ -123,38 +135,6 @@
             this.BT_ADD_IMG_COMMANDE.Text = "Ajouter une image";
             this.BT_ADD_IMG_COMMANDE.UseVisualStyleBackColor = true;
             this.BT_ADD_IMG_COMMANDE.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // LB_ID_LIVRE
-            // 
-            this.LB_ID_LIVRE.Location = new System.Drawing.Point(3, 66);
-            this.LB_ID_LIVRE.Name = "LB_ID_LIVRE";
-            this.LB_ID_LIVRE.Size = new System.Drawing.Size(149, 23);
-            this.LB_ID_LIVRE.TabIndex = 5;
-            this.LB_ID_LIVRE.Text = "Id du livre :  ";
-            this.LB_ID_LIVRE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // TB_ID_LIVRE
-            // 
-            this.TB_ID_LIVRE.Location = new System.Drawing.Point(158, 69);
-            this.TB_ID_LIVRE.Name = "TB_ID_LIVRE";
-            this.TB_ID_LIVRE.Size = new System.Drawing.Size(123, 20);
-            this.TB_ID_LIVRE.TabIndex = 8;
-            // 
-            // NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE
-            // 
-            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Location = new System.Drawing.Point(158, 95);
-            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Name = "NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE";
-            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Size = new System.Drawing.Size(123, 20);
-            this.NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.TabIndex = 13;
-            // 
-            // label2
-            // 
-            this.label2.Location = new System.Drawing.Point(3, 92);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(149, 23);
-            this.label2.TabIndex = 12;
-            this.label2.Text = "Nombres d\'Exemplaires :";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // AddCommandeWindows
             // 
@@ -178,9 +158,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox PB_COMMANDE_PHOTO;
-        private System.Windows.Forms.Label LB_NUM_COMMANDE;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.MaskedTextBox TB_NUM_COMMANDE;
         private System.Windows.Forms.Button BT_ADD_ONE_COMMANDE;
         private System.Windows.Forms.Button BT_ADD_IMG_COMMANDE;
         private System.Windows.Forms.MaskedTextBox TB_MONTANT_COMMANDE;

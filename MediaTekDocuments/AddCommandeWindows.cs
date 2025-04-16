@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
 using MediaTekDocuments.controller;
 using MediaTekDocuments.dal;
 using MediaTekDocuments.model;
@@ -16,13 +17,24 @@ namespace MediaTekDocuments
 {
     public partial class AddCommandeWindows : Form
     {
-        public AddCommandeWindows()
+        private string idCommande;
+        private string idSuivi;
+        private string idCommandeDocument;
+        public Commande CommandeCreee { get; set; }
+        public Suivi SuiviCree { get; set; }
+        public CommandesDocuments LiaisonCreee { get; set; }
+
+        public AddCommandeWindows(string idCommande, string idSuivi, string idCommandeDocument)
         {
             InitializeComponent();
             this.controller = new FrmMediatekController();
+            this.idCommande = idCommande;
+            this.idSuivi = idSuivi;
+            this.idCommandeDocument = idCommandeDocument;
         }
 
         private readonly FrmMediatekController controller;
+
 
         private void label1_Click(object sender, EventArgs e)
         {
@@ -60,97 +72,37 @@ namespace MediaTekDocuments
         }
         private void BT_ADD_ONE_COMMANDE_Click(object sender, EventArgs e)
         {
-            // Vérification des champs obligatoires avant de continuer
-            if (string.IsNullOrEmpty(TB_NUM_COMMANDE.Text) || string.IsNullOrEmpty(TB_MONTANT_COMMANDE.Text) || string.IsNullOrEmpty(TB_ID_LIVRE.Text))
+            if (string.IsNullOrEmpty(TB_MONTANT_COMMANDE.Text) || string.IsNullOrEmpty(TB_ID_LIVRE.Text))
             {
                 MessageBox.Show("Tous les champs doivent être remplis.");
                 return;
             }
 
-            if (controller == null)
+            if (!int.TryParse(TB_MONTANT_COMMANDE.Text, out int montant) ||
+                !int.TryParse(NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Text, out int nbExemplaire))
             {
-                MessageBox.Show("Le contrôleur est non initialisé.");
+                MessageBox.Show("Montant ou nombre d'exemplaires invalide.");
                 return;
             }
-            // Information pour la table Commande
-            string idCommande = TB_NUM_COMMANDE.Text;
+
+            // Utilise l'ID passé depuis FrmMediatek
             DateTime dateCommande = DateTime.Now;
-            int montant;
 
-            // Assure-toi que TB_MONTANT_COMMANDE.Text contient bien un nombre
-            if (!int.TryParse(TB_MONTANT_COMMANDE.Text, out montant))
+            CommandeCreee = new Commande(idCommande, dateCommande, montant);
+            SuiviCree = new Suivi { id_suivi = idSuivi, IdCommande = idCommande, Status = 1, DateSuivi = DateTime.Now };
+            LiaisonCreee = new CommandesDocuments
             {
-                MessageBox.Show("Le montant de la commande est invalide.");
-                return;
-            }
-
-            // Information pour la table CommandeDocument
-            string idDocument = TB_ID_LIVRE.Text;
-            int nbExemplaire;
-
-            // Assure-toi que NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE contient bien un nombre
-            if (!int.TryParse(NUMBER_OF_EXEMPLAIRE_FOR_COMMANDE.Text, out nbExemplaire))
-            {
-                MessageBox.Show("Le nombre d'exemplaires est invalide.");
-                return;
-            }
-
-            // Création de la commande pour la table "Commande"
-            Commande nouvelleCommande = new Commande(idCommande, dateCommande, montant);
-            bool commandeCree = controller.CreerCommande(nouvelleCommande);
-
-            if (string.IsNullOrEmpty(idCommande))
-            {
-                MessageBox.Show("L'ID de la commande est invalide.");
-                return;
-            }
-
-            if (montant <= 0)
-            {
-                MessageBox.Show("Le montant de la commande doit être supérieur à zéro.");
-                return;
-            }
-
-            if (!commandeCree)
-            {
-                MessageBox.Show("Erreur lors de la création de la commande.");
-                return;
-            }
-
-            // Création de la commande pour la table "Suivi"
-            Suivi nouveauSuivi = new Suivi
-            {
-                IdCommande = idCommande,
-                Status = 0,
-                DateSuivi = DateTime.Now
-            };
-            bool commandeSuiviCree = controller.CreerSuivi(nouveauSuivi);
-
-            if (!commandeSuiviCree)
-            {
-                MessageBox.Show("Erreur lors de la création du suivi de la commande");
-                return;
-            }
-
-            // Création de la commande pour la table "CommandesDocuments"
-            CommandesDocuments liaison = new CommandesDocuments
-            {
-                id_document = idDocument,
+                id_commandedocument = idCommandeDocument,
+                id_document = TB_ID_LIVRE.Text,
                 nbExemplaire = nbExemplaire,
-                idLivreDvd = "00000",
+                idLivreDvd = null,
                 id_commande = idCommande
             };
-            bool liaisonCree = controller.CreerCommandeDocument(liaison);
 
-            if (commandeSuiviCree && liaisonCree)
-            {
-                MessageBox.Show("Commande, suivi et liaison créés avec succès !");
-            }
-            else
-            {
-                MessageBox.Show("Commande créée mais erreur sur le suivi ou la liaison.");
-            }
+            this.DialogResult = DialogResult.OK;
+            this.Close();
         }
+
     }
 }
 

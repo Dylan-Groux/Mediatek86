@@ -1737,10 +1737,50 @@ namespace MediaTekDocuments.view
 
         #endregion
 
+        private void LoadCommandes()
+        {
+            List<CommandeSuiviDTO> commandes = controller.GetCommandesSuivisDTO();
+            RemplirCommandeAvecSuivi(commandes);
+        }
+
         private void BT_ADD_NEW_COMMANDE_Click(object sender, EventArgs e)
         {
-            AddCommandeWindows addCommandeWindonws = new AddCommandeWindows();
-            addCommandeWindonws.Show();
+            controller.GetAllCommandes();
+            // Générez l'ID dans FrmMediatek
+            string idCommande = controller.GenerateCommandeId();  // ID généré correctement ici
+            string idSuivi = controller.GenerateSuiviId();
+            string idCommandeDocument = controller.GenerateCommandeDocumentId();
+
+            var addForm = new AddCommandeWindows(idCommande, idSuivi, idCommandeDocument);  // Passe l'ID généré à la fenêtre AddCommandeWindows
+
+            if (addForm.ShowDialog() == DialogResult.OK)
+            {
+                var commande = addForm.CommandeCreee;
+                var suivi = addForm.SuiviCree;
+                var liaison = addForm.LiaisonCreee;
+
+                if (commande != null && controller.CreerCommande(commande))
+                {
+                    bool suiviOK = controller.CreerSuivi(suivi);
+                    bool liaisonOK = controller.CreerCommandeDocument(liaison);
+
+                    if (suiviOK && liaisonOK)
+                        MessageBox.Show("Commande, suivi et liaison créés avec succès !");
+                    else
+                        MessageBox.Show("Commande créée mais erreur sur le suivi ou la liaison.");
+
+                    LoadCommandes();  // Actualise la liste des commandes
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de la création de la commande.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Commande annulée.");
+            }
         }
+
     }
 }

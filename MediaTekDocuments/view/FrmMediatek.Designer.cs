@@ -180,6 +180,7 @@ namespace MediaTekDocuments.view
             this.label54 = new System.Windows.Forms.Label();
             this.btnReceptionRechercher = new System.Windows.Forms.Button();
             this.tabCommandes = new System.Windows.Forms.TabPage();
+            this.BT_ADD_NEW_COMMANDE = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.TXB_SEARCH_TITILE_LIVRE = new System.Windows.Forms.TextBox();
             this.LABEL_SEARCH_TITLE_LIVRE = new System.Windows.Forms.Label();
@@ -213,7 +214,6 @@ namespace MediaTekDocuments.view
             this.BT_CLEAR_CHOICE_COMMANDES_ID = new System.Windows.Forms.Button();
             this.LABEL_CHOICE_COMMANDE_ID = new System.Windows.Forms.Label();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.BT_ADD_NEW_COMMANDE = new System.Windows.Forms.Button();
             this.TAB_COMMANDE.SuspendLayout();
             this.tabLivres.SuspendLayout();
             this.grpLivresInfos.SuspendLayout();
@@ -1845,6 +1845,16 @@ namespace MediaTekDocuments.view
             this.tabCommandes.Text = "Commandes des livres";
             this.tabCommandes.UseVisualStyleBackColor = true;
             // 
+            // BT_ADD_NEW_COMMANDE
+            // 
+            this.BT_ADD_NEW_COMMANDE.Location = new System.Drawing.Point(483, 20);
+            this.BT_ADD_NEW_COMMANDE.Name = "BT_ADD_NEW_COMMANDE";
+            this.BT_ADD_NEW_COMMANDE.Size = new System.Drawing.Size(285, 22);
+            this.BT_ADD_NEW_COMMANDE.TabIndex = 30;
+            this.BT_ADD_NEW_COMMANDE.Text = "Ajouter une nouvelle commande";
+            this.BT_ADD_NEW_COMMANDE.UseVisualStyleBackColor = true;
+            this.BT_ADD_NEW_COMMANDE.Click += new System.EventHandler(this.BT_ADD_NEW_COMMANDE_Click);
+            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(424, 276);
@@ -2177,16 +2187,6 @@ namespace MediaTekDocuments.view
             this.LABEL_CHOICE_COMMANDE_ID.Size = new System.Drawing.Size(230, 13);
             this.LABEL_CHOICE_COMMANDE_ID.TabIndex = 12;
             this.LABEL_CHOICE_COMMANDE_ID.Text = "Rechercher un numéro de commande : ";
-            // 
-            // BT_ADD_NEW_COMMANDE
-            // 
-            this.BT_ADD_NEW_COMMANDE.Location = new System.Drawing.Point(483, 20);
-            this.BT_ADD_NEW_COMMANDE.Name = "BT_ADD_NEW_COMMANDE";
-            this.BT_ADD_NEW_COMMANDE.Size = new System.Drawing.Size(285, 22);
-            this.BT_ADD_NEW_COMMANDE.TabIndex = 30;
-            this.BT_ADD_NEW_COMMANDE.Text = "Ajouter une nouvelle commande";
-            this.BT_ADD_NEW_COMMANDE.UseVisualStyleBackColor = true;
-            this.BT_ADD_NEW_COMMANDE.Click += new System.EventHandler(this.BT_ADD_NEW_COMMANDE_Click);
             // 
             // FrmMediatek
             // 

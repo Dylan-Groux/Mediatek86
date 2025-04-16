@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Linq;
 using System.Windows.Forms;
+using System.ComponentModel.Design;
 
 namespace MediaTekDocuments.dal
 {
@@ -248,14 +249,20 @@ namespace MediaTekDocuments.dal
         }
 
         #region Commandes
+
+        private List<Commande> commandes;
         /// <summary>
         /// Retourne toutes les commandes à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Commandes</returns>
         public List<Commande> GetAllCommandes()
         {
-            List<Commande> lesCommandes = TraitementRecup<Commande>(GET, "commande", null);
-            return lesCommandes;
+            var commandes = TraitementRecup<Commande>(GET, "commande", null);
+
+            string ids = string.Join(", ", commandes.Select(c => c.Id));
+            MessageBox.Show("API a renvoyé : " + ids);
+
+            return commandes;
         }
         #endregion
 
@@ -331,6 +338,10 @@ namespace MediaTekDocuments.dal
             return false;
         }
 
+        public void ReloadCommandes()
+        {
+            commandes = TraitementRecup<Commande>(GET, "commande", null);
+        }
 
         /// <summary>
         /// Insertion d'une donnée de CommandesDocuments en base de données

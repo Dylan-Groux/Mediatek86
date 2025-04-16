@@ -106,7 +106,12 @@ namespace MediaTekDocuments.controller
         /// <returns>Liste d'objets Commandes</returns>
         public List<Commande> GetAllCommandes()
         {
-            return access.GetAllCommandes();
+            var commandes = access.GetAllCommandes();
+
+            string allIds = string.Join(", ", commandes.Select(c => c.Id));
+            MessageBox.Show("GetAllCommandes(): " + allIds);
+
+            return commandes;
         }
 
 
@@ -210,5 +215,199 @@ namespace MediaTekDocuments.controller
             return access.CreerCommandeDocument(commandedocument);
         }
 
+        /// <summary>
+        /// Génère un ID pour la table commande id
+        /// <desc>
+        /// On récupère ici la totalité des commandes via un appel APi direct, on le stock dans une varaible allCommandes,
+        /// On exploite cette variable en la triant par ordre décroissant en triant par l'ID, stock dans une variable lastCommandeId
+        /// Si null dans ce cas on affiche C001 car ce serait la première commande, sinon on extrait le préfix et la partie numérique dans deux variables
+        /// dans notre cas on force le préfix "C" => contrôle saisit utilisateur au cas ou.
+        /// on vérifie que l'exactration de la partie numérique est valide (int) et on transmet cela dans la variable lastNumber
+        /// on incrémente de 1 la partie numérique puis on recolle le tout avec le nouveau nombre et le préfix, on ajoute "D3" pour s'assurer du bon format.
+        /// </desc>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        public string GenerateCommandeId()
+        {
+            var allCommandes = access.GetAllCommandes();
+            var lastCommandeId = allCommandes
+                .OrderByDescending(c => c.Id) 
+                .FirstOrDefault()?.Id;
+
+            MessageBox.Show("Dernier ID trouvé : " + lastCommandeId);
+
+            if (allCommandes == null || allCommandes.Count == 0)
+            {
+                MessageBox.Show("Aucune commande trouvée dans GenerateCommandeId()");
+            }
+            else
+            {
+                string allIds = string.Join(", ", allCommandes.Select(c => c.Id));
+                MessageBox.Show("Commandes récupérées dans GenerateCommandeId(): " + allIds);
+            }
+
+            if (string.IsNullOrEmpty(lastCommandeId))
+            {
+                return "C001";
+            }
+
+            // Extraire la partie numérique de l'ID, en excluant le préfixe (par exemple, "C001" -> "001", "MD000" -> "000")
+            string prefix = new string(lastCommandeId.TakeWhile(char.IsLetter).ToArray()); // Extrait le préfixe, par exemple "C"
+            string numberPart = new string(lastCommandeId.SkipWhile(char.IsLetter).ToArray()); // Extrait la partie numérique
+
+            // Si le préfixe n'est pas "C", forcer "C" comme préfixe pour les nouvelles commandes
+            if (prefix != "C")
+            {
+                prefix = "C";
+            }
+
+            // Vérifie que la partie numérique est un nombre valide
+            if (!int.TryParse(numberPart, out int lastNumber))
+            {
+                throw new FormatException($"Le suffixe de l'ID de la commande n'est pas un nombre valide : {numberPart}");
+            }
+
+            // Incrémenter de 1
+            int newNumber = lastNumber + 1;
+
+            // Formater l'ID avec le préfixe et un padding de 3 chiffres (par exemple, "C001" si le préfixe est "C")
+            string newCommandeId = prefix + newNumber.ToString("D3"); // Utilise "D3" pour s'assurer que le nombre a toujours 3 chiffres
+
+            return newCommandeId;
+
+
+        }
+
+
+        /// <summary>
+        /// Génère un ID pour la table commande id
+        /// <desc>
+        /// On récupère ici la totalité des commandes via un appel APi direct, on le stock dans une varaible allCommandes,
+        /// On exploite cette variable en la triant par ordre décroissant en triant par l'ID, stock dans une variable lastCommandeId
+        /// Si null dans ce cas on affiche C001 car ce serait la première commande, sinon on extrait le préfix et la partie numérique dans deux variables
+        /// dans notre cas on force le préfix "C" => contrôle saisit utilisateur au cas ou.
+        /// on vérifie que l'exactration de la partie numérique est valide (int) et on transmet cela dans la variable lastNumber
+        /// on incrémente de 1 la partie numérique puis on recolle le tout avec le nouveau nombre et le préfix, on ajoute "D3" pour s'assurer du bon format.
+        /// </desc>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        public string GenerateSuiviId()
+        {
+            var allSuivis = access.GetAllSuivi();
+            var lastSuiviId = allSuivis
+                .OrderByDescending(c => c.id_suivi)
+                .FirstOrDefault()?.id_suivi;
+
+            MessageBox.Show("Dernier ID trouvé : " + lastSuiviId);
+
+            if (allSuivis == null || allSuivis.Count == 0)
+            {
+                MessageBox.Show("Aucune Suivi trouvée dans GenerateSuiviId()");
+            }
+            else
+            {
+                string allIds = string.Join(", ", allSuivis.Select(c => c.id_suivi));
+                MessageBox.Show("Suivis récupérées dans GenerateSuiviId(): " + allIds);
+            }
+
+            if (string.IsNullOrEmpty(lastSuiviId))
+            {
+                return "S001";
+            }
+
+            // Extraire la partie numérique de l'ID, en excluant le préfixe (par exemple, "C001" -> "001", "MD000" -> "000")
+            string prefix = new string(lastSuiviId.TakeWhile(char.IsLetter).ToArray()); // Extrait le préfixe, par exemple "C"
+            string numberPart = new string(lastSuiviId.SkipWhile(char.IsLetter).ToArray()); // Extrait la partie numérique
+
+            // Si le préfixe n'est pas "S", forcer "S" comme préfixe pour les nouvelles Suivis
+            if (prefix != "S")
+            {
+                prefix = "S";
+            }
+
+            // Vérifie que la partie numérique est un nombre valide
+            if (!int.TryParse(numberPart, out int lastNumber))
+            {
+                throw new FormatException($"Le suffixe de l'ID de la Suivi n'est pas un nombre valide : {numberPart}");
+            }
+
+            // Incrémenter de 1
+            int newNumber = lastNumber + 1;
+
+            // Formater l'ID avec le préfixe et un padding de 3 chiffres (par exemple, "C001" si le préfixe est "C")
+            string newSuiviId = prefix + newNumber.ToString("D3"); // Utilise "D3" pour s'assurer que le nombre a toujours 3 chiffres
+
+            return newSuiviId;
+
+
+        }
+
+
+
+        /// <summary>
+        /// Génère un ID pour la table commande id
+        /// <desc>
+        /// On récupère ici la totalité des commandes via un appel APi direct, on le stock dans une varaible allCommandes,
+        /// On exploite cette variable en la triant par ordre décroissant en triant par l'ID, stock dans une variable lastCommandeId
+        /// Si null dans ce cas on affiche C001 car ce serait la première commande, sinon on extrait le préfix et la partie numérique dans deux variables
+        /// dans notre cas on force le préfix "C" => contrôle saisit utilisateur au cas ou.
+        /// on vérifie que l'exactration de la partie numérique est valide (int) et on transmet cela dans la variable lastNumber
+        /// on incrémente de 1 la partie numérique puis on recolle le tout avec le nouveau nombre et le préfix, on ajoute "D3" pour s'assurer du bon format.
+        /// </desc>
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        public string GenerateCommandeDocumentId()
+        {
+            var allCommandeDocuments = access.GetAllCommandesDocuments();
+            var lastCommandeDocumentId = allCommandeDocuments
+                .OrderByDescending(c => c.id_commandedocument)
+                .FirstOrDefault()?.id_commandedocument;
+
+            MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
+
+            if (allCommandeDocuments == null || allCommandeDocuments.Count == 0)
+            {
+                MessageBox.Show("Aucune CommandeDocument trouvée dans GenerateCommandeDocumentId()");
+            }
+            else
+            {
+                string allIds = string.Join(", ", allCommandeDocuments.Select(c => c.id_commandedocument));
+                MessageBox.Show("CommandeDocuments récupérées dans GenerateCommandeDocumentId(): " + allIds);
+            }
+
+            if (string.IsNullOrEmpty(lastCommandeDocumentId))
+            {
+                return "CD001";
+            }
+
+            // Extraire la partie numérique de l'ID, en excluant le préfixe (par exemple, "C001" -> "001", "MD000" -> "000")
+            string prefix = new string(lastCommandeDocumentId.TakeWhile(char.IsLetter).ToArray()); // Extrait le préfixe, par exemple "C"
+            string numberPart = new string(lastCommandeDocumentId.SkipWhile(char.IsLetter).ToArray()); // Extrait la partie numérique
+
+            // Si le préfixe n'est pas "S", forcer "S" comme préfixe pour les nouvelles CommandeDocuments
+            if (prefix != "CD")
+            {
+                prefix = "CD";
+            }
+
+            // Vérifie que la partie numérique est un nombre valide
+            if (!int.TryParse(numberPart, out int lastNumber))
+            {
+                throw new FormatException($"Le suffixe de l'ID de la CommandeDocument n'est pas un nombre valide : {numberPart}");
+            }
+
+            // Incrémenter de 1
+            int newNumber = lastNumber + 1;
+
+            // Formater l'ID avec le préfixe et un padding de 3 chiffres (par exemple, "C001" si le préfixe est "C")
+            string newCommandeDocumentId = prefix + newNumber.ToString("D3"); // Utilise "D3" pour s'assurer que le nombre a toujours 3 chiffres
+
+            return newCommandeDocumentId;
+
+
+        }
     }
 }
