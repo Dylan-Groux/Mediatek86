@@ -1906,9 +1906,11 @@ namespace MediaTekDocuments.view
             this.DATAGRID_COMMANDES.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DATAGRID_COMMANDES.Location = new System.Drawing.Point(4, 18);
             this.DATAGRID_COMMANDES.Name = "DATAGRID_COMMANDES";
-            this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(654, 172);
+            this.DATAGRID_COMMANDES.Size = new System.Drawing.Size(702, 172);
             this.DATAGRID_COMMANDES.TabIndex = 0;
+            this.DATAGRID_COMMANDES.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DATAGRID_COMMANDES_CellValueChanged);
             this.DATAGRID_COMMANDES.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DATAGRID_COMMANDES_ColumnHeaderMouseClick);
+            this.DATAGRID_COMMANDES.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.DATAGRID_COMMANDES_EditingControlShowing);
             // 
             // GB_LIVRES_LIST
             // 

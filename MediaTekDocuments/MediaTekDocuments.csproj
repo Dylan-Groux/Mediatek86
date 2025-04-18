@@ -68,6 +68,7 @@
       <DependentUpon>AddCommandeWindows.cs</DependentUpon>
     </Compile>
     <Compile Include="controller\CommandeSuiviDTO.cs" />
+    <Compile Include="controller\Statut.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="model\Commande.cs" />
     <Compile Include="model\CommandesDocuments.cs" />

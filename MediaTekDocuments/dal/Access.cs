@@ -9,6 +9,9 @@ using System.Configuration;
 using System.Linq;
 using System.Windows.Forms;
 using System.ComponentModel.Design;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text;
 
 namespace MediaTekDocuments.dal
 {
@@ -260,39 +263,10 @@ namespace MediaTekDocuments.dal
             var commandes = TraitementRecup<Commande>(GET, "commande", null);
 
             string ids = string.Join(", ", commandes.Select(c => c.Id));
-            MessageBox.Show("API a renvoyé : " + ids);
+            //MessageBox.Show("API a renvoyé : " + ids);
 
             return commandes;
         }
-        #endregion
-
-        #region Suivi
-        /// <summary>
-        /// Retourne tous les suivi à partir de la BDD
-        /// </summary>
-        /// <returns>Liste d'objets Suivi</returns>
-        public List<Suivi> GetAllSuivi()
-        {
-            List<Suivi> lesSuivi = TraitementRecup<Suivi>(GET, "suivi", null);
-            return lesSuivi;
-        }
-
-        #endregion
-        #region CommandesDocuments
-
-        //Pour l'exploitation de la donnée par la suite (DGV - CBX  ...) 
-        public List<CommandesDocuments> GetAllCommnadesDocuments()
-        {
-            List<CommandesDocuments> lesCommandesDocuments = TraitementRecup<CommandesDocuments>(GET, "commandedocument", null);
-            return lesCommandesDocuments;
-        }
-
-        // Pour le test de la table 
-        public List<CommandesDocuments> GetAllCommandesDocuments()
-        {
-            return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
-        }
-        #endregion
 
         /// <summary>
         /// Insertion d'une commande en base de données
@@ -302,7 +276,7 @@ namespace MediaTekDocuments.dal
         public bool CreerCommande(Commande commande)
         {
             string jsonCommande = JsonConvert.SerializeObject(commande, new CustomDateTimeConverter());
-            MessageBox.Show("JSON Commande envoyée : " + jsonCommande);
+            //MessageBox.Show("JSON Commande envoyée : " + jsonCommande);
             try
             {
                 List<Commande> liste = TraitementRecup<Commande>(POST, "commande", "champs=" + jsonCommande);
@@ -316,6 +290,20 @@ namespace MediaTekDocuments.dal
         }
 
 
+        #endregion
+
+        #region Suivi
+        /// <summary>
+        /// Retourne tous les suivi à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets Suivi</returns>
+        public List<Suivi> GetAllSuivi()
+        {
+            List<Suivi> lesSuivi = TraitementRecup<Suivi>(GET, "suivi", null);
+            return lesSuivi;
+        }
+
+
         /// <summary>
         /// Insertion d'un suivi en base de données
         /// </summary>
@@ -324,7 +312,7 @@ namespace MediaTekDocuments.dal
         public bool CreerSuivi(Suivi suivi)
         {
             string jsonSuivi = JsonConvert.SerializeObject(suivi, new CustomDateTimeConverter());
-            MessageBox.Show("JSON Commande envoyée : " + jsonSuivi);
+            //MessageBox.Show("JSON Commande envoyée : " + jsonSuivi);
             try
             {
                 List<Suivi> liste = TraitementRecup<Suivi>(POST, "suivi", "champs=" + jsonSuivi);
@@ -332,15 +320,62 @@ namespace MediaTekDocuments.dal
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur lors de l'insertion du suivi : " + ex.Message);
-                MessageBox.Show("Données envoyées : " + jsonSuivi);
+                // MessageBox.Show("Erreur lors de l'insertion du suivi : " + ex.Message);
+                // MessageBox.Show("Données envoyées : " + jsonSuivi);
             }
             return false;
         }
 
-        public void ReloadCommandes()
+        /// <summary>
+        /// Met à jour le statut d'une commande dans la base de données via l'API
+        /// </summary>
+        /// <param name="commandeId">ID de la commande</param>
+        /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
+        /// <returns>Retourne true si la mise à jour a réussi</returns>
+        public bool UpdateStatutSuivi(string idSuivi, string idCommande, int nouveauStatut)
         {
-            commandes = TraitementRecup<Commande>(GET, "commande", null);
+            // Prépare les données à envoyer
+            var data = new Dictionary<string, string>
+            {
+                { "champs", JsonConvert.SerializeObject(new
+                    {
+                        id_commande = idCommande,
+                        status = nouveauStatut,
+                        date_suivi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    })
+                }
+            };
+
+            try
+            {
+                // Crée le client HTTP
+                using (var client = new HttpClient())
+                {
+                    var content = new FormUrlEncodedContent(data);
+
+                    // Appel à l'API avec PUT
+                    var response = client.PutAsync($"http://localhost/rest_mediatekdocuments/suivi/{idSuivi}", content).Result;
+
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la mise à jour du suivi : " + ex.Message);
+                return false;
+            }
+        }
+
+
+
+        #endregion
+        #region CommandesDocuments
+
+        //Pour l'exploitation de la donnée par la suite (DGV - CBX  ...) 
+        public List<CommandesDocuments> GetAllCommnadesDocuments()
+        {
+            List<CommandesDocuments> lesCommandesDocuments = TraitementRecup<CommandesDocuments>(GET, "commandedocument", null);
+            return lesCommandesDocuments;
         }
 
         /// <summary>
@@ -351,7 +386,7 @@ namespace MediaTekDocuments.dal
         public bool CreerCommandeDocument(CommandesDocuments commandedocument)
         {
             string jsonCommandesDocuments = JsonConvert.SerializeObject(commandedocument, new CustomDateTimeConverter());
-            MessageBox.Show("JSON Commande envoyée : " + jsonCommandesDocuments);
+            //MessageBox.Show("JSON Commande envoyée : " + jsonCommandesDocuments);
             try
             {
                 List<CommandesDocuments> liste = TraitementRecup<CommandesDocuments>(POST, "commandedocument", "champs=" + jsonCommandesDocuments);
@@ -363,5 +398,15 @@ namespace MediaTekDocuments.dal
             }
             return false;
         }
+
+            #region Test de la table
+            // Pour le test de la table 
+            public List<CommandesDocuments> GetAllCommandesDocuments()
+            {
+                return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
+            }
+        #endregion
+
+        #endregion
     }
 }

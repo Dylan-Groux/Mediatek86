@@ -10,6 +10,8 @@ using MediaTekDocuments.dal;
 using System.ComponentModel.Design;
 using System.Xml.Linq;
 using MediaTekDocuments;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace MediaTekDocuments.view
 
@@ -1260,11 +1262,7 @@ namespace MediaTekDocuments.view
         //Variables
         private List<Suivi> lesSuivi = new List<Suivi>();
         private List<CommandesDocuments> lesCommandesDocuments = new List<CommandesDocuments>();
-        List<CommandeSuivie> lesCommandesSuivies = new List<CommandeSuivie>();
         private List<Commande> lesCommandes = new List<Commande>();
-        private readonly BindingSource bdgCommandesListe = new BindingSource();
-        private readonly BindingSource bdgSuiviListe = new BindingSource();
-        private readonly BindingSource bdgCommandesAvecSuiviListe = new BindingSource();
         private bool isAscending = true; //Gestion d'état dynamique pour triage
 
         private List<CommandeSuiviDTO> commandeSuivis = new List<CommandeSuiviDTO>();
@@ -1295,18 +1293,6 @@ namespace MediaTekDocuments.view
         }
 
         /// <summary>
-        /// Vide les zones d'affichage des informations liées à une commande
-        /// </summary>
-        //private void ViderCommandeInfos()
-        //{
-        //   txbCommandeNumero.Text = "";
-        //  txbCommandeDate.Text = "";
-        // txbCommandeMontant.Text = "";
-        //txbCommandeStatutSuivi.Text = "";
-        //txbCommandeDateSuivi.Text = "";
-        //}
-
-        /// <summary>
         /// Affichage de la liste complète des Commandes
         /// et annulation de toutes les recherches et filtres
         /// </summary>
@@ -1318,6 +1304,7 @@ namespace MediaTekDocuments.view
             //Remplissage de la DataGridView des Livres
             RemplirLivresListeCommandes(lesLivres);
         }
+
 
         #region "Liste des commandes en cours"
 
@@ -1333,6 +1320,24 @@ namespace MediaTekDocuments.view
             DATAGRID_COMMANDES.DataSource = null;
             DATAGRID_COMMANDES.DataSource = commandeSuivis;
 
+            #region paramètre de la  modification d'un statut 
+            var statuts = new List<Statut>
+            {
+                new Statut { Value = 1, Libelle = "En cours" },
+                new Statut { Value = 2, Libelle = "Livré" },
+                new Statut { Value = 3, Libelle = "Disponible en points relais" },
+                new Statut { Value = 4, Libelle = "Annulé" }
+            };
+
+            var comboCol = new DataGridViewComboBoxColumn();
+            comboCol.Name = "ColonneStatutCombo";
+            comboCol.HeaderText = "Modifier le statut";
+            comboCol.DataSource = statuts;
+            comboCol.DisplayMember = "Libelle";
+            comboCol.ValueMember = "Value";
+            comboCol.DataPropertyName = "StatutSuivi"; // lie la valeur réelle
+            comboCol.DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton; // pour un look discret
+            #endregion
             #region protection saisit utilisateur
             // Empêche la sélection de lignes entières
             DATAGRID_COMMANDES.SelectionMode = DataGridViewSelectionMode.CellSelect;
@@ -1363,24 +1368,33 @@ namespace MediaTekDocuments.view
             DATAGRID_COMMANDES.Columns["SuiviId"].Visible = false;
             DATAGRID_COMMANDES.Columns["StatutSuivi"].Visible = false;
 
-            // Renomme les en-têtes
+            // En tête de la Dgv
             DATAGRID_COMMANDES.Columns["CommandeId"].HeaderText = "N° de la commande";
             DATAGRID_COMMANDES.Columns["DateCommande"].HeaderText = "Date de la commande";
             DATAGRID_COMMANDES.Columns["Montant"].HeaderText = "Montant (€)";
             DATAGRID_COMMANDES.Columns["DateSuivi"].HeaderText = "Date de changement de suivi";
             DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].HeaderText = "Statut de suivi";
+            DATAGRID_COMMANDES.Columns.Add(comboCol);
 
             DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DATAGRID_COMMANDES.Columns["CommandeId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DATAGRID_COMMANDES.Columns["DateSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-            // Réorganise l'ordre des colonnes (facultatif)
+            // Réorganise l'ordre des colonnes
             DATAGRID_COMMANDES.Columns["CommandeId"].DisplayIndex = 1;
             DATAGRID_COMMANDES.Columns["DateCommande"].DisplayIndex = 2;
             DATAGRID_COMMANDES.Columns["Montant"].DisplayIndex = 3;
             DATAGRID_COMMANDES.Columns["DateSuivi"].DisplayIndex = 4;
             DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].DisplayIndex = 5;
+            DATAGRID_COMMANDES.Columns["ColonneStatutCombo"].DisplayIndex = 6;
 
+            DATAGRID_COMMANDES.ReadOnly = false;
+
+            // Permet de rendre modifiable uniquement la colonne voulu
+            foreach (DataGridViewColumn col in DATAGRID_COMMANDES.Columns)
+            {
+                col.ReadOnly = col.Name != "ColonneStatutCombo";
+            }
         }
 
         /// <summary>
@@ -1466,6 +1480,24 @@ namespace MediaTekDocuments.view
             RemplirCommandeAvecSuivi(sortedList);
         }
 
+
+        /// <summary>
+        /// Permet de recharger complètement la liste des commandes
+        /// </summary>
+        private void LoadCommandes()
+        {
+            List<CommandeSuiviDTO> commandes = controller.GetCommandesSuivisDTO();
+            RemplirCommandeAvecSuivi(commandes);
+        }
+
+        /// <summary>
+        /// Permet de forcer le rechargement de la Liste CommandesDTO dans sa liste de base
+        /// </summary>
+        private void ReloadCommandesDTOListBase()
+        {
+            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+        }
+
         /// <summary>
         /// Permet de recherche par ID de commande dans la TextBox
         /// </summary>
@@ -1473,6 +1505,7 @@ namespace MediaTekDocuments.view
         /// <param name="e"></param>
         private void TXB_SEARCH_NUM_COMMANDE_TextChanged(object sender, EventArgs e)
         {
+            ReloadCommandesDTOListBase();
             string saisie = TXB_SEARCH_NUM_COMMANDE.Text.Trim().ToLower();
 
             if (!string.IsNullOrEmpty(saisie))
@@ -1499,19 +1532,128 @@ namespace MediaTekDocuments.view
             RemplirCommandeAvecSuivi(commandeSuivis);
         }
 
+        /// <summary>
+        ///  Supprime le text dans la TextBox quand le champs est cliqué
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TXB_SEARCH_NUM_COMMANDE_Click(object sender, EventArgs e)
         {
             this.TXB_SEARCH_NUM_COMMANDE.Text = "";
             RemplirCommandeAvecSuivi(commandeSuivis);
         }
 
-        #endregion 
+        /// <summary>
+        /// Gère l'affichage et la mise à jour de la ComboBox dans la cellule de statut lors de l'édition d'une ligne dans le DataGrid.
+        /// Cette méthode est déclenchée lorsque l'utilisateur entre en mode édition sur la colonne "ColonneStatutCombo" ( = à Modifier le suivi ) du DataGrid.
+        /// Elle met à jour dynamiquement les options de statut disponibles en fonction du statut actuel de la commande.
+        /// Seules les valeurs de statut supérieures ou égales au statut actuel sont proposées dans la liste.
+        /// En cas de statut actuel non valide dans la liste, cette valeur est ajoutée temporairement pour permettre la sélection.
+        /// </summary>
+        /// <param name="sender">L'objet émetteur de l'événement (le DataGridView).</param>
+        /// <param name="e">Les arguments de l'événement contenant les informations sur le contrôle d'édition en cours.</param>
+        private async void DATAGRID_COMMANDES_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (DATAGRID_COMMANDES.CurrentCell.ColumnIndex == DATAGRID_COMMANDES.Columns["ColonneStatutCombo"].Index)
+            {
+                ComboBox combo = e.Control as ComboBox;
+                if (combo != null)
+                {
+                    // Récupère la ligne et le statut actuel
+                    var row = DATAGRID_COMMANDES.CurrentRow?.DataBoundItem as CommandeSuiviDTO;
+                    if (row != null)
+                    {
+                        int statutActuel = row.StatutSuivi;
+
+                        // Liste dynamique des statuts autorisés (>= statut actuel)
+                        var statutsAutorises = new List<Statut>
+                        {
+                            new Statut { Value = 1, Libelle = "En cours" },
+                            new Statut { Value = 2, Libelle = "Livré" },
+                            new Statut { Value = 3, Libelle = "Disponible en points relais" },
+                            new Statut { Value = 4, Libelle = "Annulé" }
+                        }
+                        .Where(s => s.Value >= statutActuel)
+                        .ToList();
+
+                        // Retarder la mise à jour du DataSource pour éviter les conflits
+                        await Task.Delay(100);
+
+                        // Liaison à la comboBox
+                        combo.DataSource = null; // important avant de le changer
+                        combo.DisplayMember = "Libelle";
+                        combo.ValueMember = "Value";
+                        combo.DataSource = statutsAutorises;
+
+                        // Si la valeur actuelle n'est pas valide dans la liste, on l'ajoute temporairement
+                        if (!statutsAutorises.Any(s => s.Value == statutActuel))
+                        {
+                            // Ajoute la valeur actuelle (même si elle ne fait pas partie de la liste) pour la maintenir
+                            statutsAutorises.Insert(0, new Statut { Value = statutActuel, Libelle = GetStatutLibelle(statutActuel) });
+                            combo.SelectedValue = statutActuel;
+                        }
+                        else
+                        {
+                            // Si c'est valide, on sélectionne la valeur dans la ComboBox
+                            combo.SelectedValue = statutActuel;
+                        }
+
+                        // Ajoute un gestionnaire d'événement pour valider lors de la sélection
+                        combo.Validating -= ComboBox_Validating;
+                        combo.Validating += ComboBox_Validating;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Récupération des informations changé dans la cellule et envois auprès de la BDD
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DATAGRID_COMMANDES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneStatutCombo")
+            {
+                var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
+                if (row != null)
+                {
+                    int nouveauStatut = (int)DATAGRID_COMMANDES.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+                    string idSuivi = row.SuiviId;
+                    string idCommande = row.CommandeId;
+
+                    // Création de l'objet Suivi avec la nouvelle valeur
+                    Suivi suiviModifie = new Suivi
+                    {
+                        id_suivi = idSuivi,
+                        IdCommande = idCommande,
+                        Status = nouveauStatut,
+                        DateSuivi = DateTime.Now
+                    };
+
+                    // Envoi à l'API via la méthode existante
+                    bool success = controller.ModifierStatutCommande(row.SuiviId, row.CommandeId, nouveauStatut);
+
+                    if (success)
+                    {
+                        MessageBox.Show("Statut modifié avec succès !");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la modification du statut.");
+                    }
+                }
+            }
+        }
+
+        #endregion
 
         #region "Liste des livres disponibles"
-        /// <summary>
-        /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
-        /// </summary>
-        /// <param name="livresCommandes"></param>
+            /// <summary>
+            /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
+            /// </summary>
+            /// <param name="livresCommandes"></param>
         private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
         {
             bdgLivresListe.DataSource = livresCommandes;
@@ -1583,7 +1725,6 @@ namespace MediaTekDocuments.view
                 RemplirLivresListeComplete();
             }
         }
-
 
         /// <summary>
         /// Syteme de recherche par titre d'un livre
@@ -1728,26 +1869,45 @@ namespace MediaTekDocuments.view
             var testCommandes = new TestCommandesDocuments();
             testCommandes.TesterRecuperationCommandes();
         }
-
         #endregion
 
-        #region newcommande formulaire
-
-        #endregion
-
-        #endregion
-
-        private void LoadCommandes()
+        #region Gestion du DATAERROR
+        /// <summary>
+        /// Gestonnaire d'évènement pour ComboBox
+        /// <desc>
+        /// Permet de forcer l'utilisateur a choisir une option valide d'une ComboBox
+        /// avant de passer à autre chose.
+        /// </desc>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ComboBox_Validating(object sender, CancelEventArgs e)
         {
-            List<CommandeSuiviDTO> commandes = controller.GetCommandesSuivisDTO();
-            RemplirCommandeAvecSuivi(commandes);
+            ComboBox combo = sender as ComboBox;
+            if (combo != null)
+            {
+                if (!combo.Items.Cast<Statut>().Any(s => s.Value == (int)combo.SelectedValue))
+                {
+                    e.Cancel = true; 
+                }
+            }
         }
+        #endregion
 
+        #region Gestion des nouvelles commandes
+        /// <summary>
+        /// Gère l'événement de clic sur le bouton pour ajouter une nouvelle commande.
+        /// Cette méthode génère des ID pour la commande, le suivi, et la liaison, puis ouvre un formulaire de création de commande.
+        /// Si l'utilisateur valide la création dans le formulaire, elle enregistre la commande, le suivi et la liaison dans la base de données.
+        /// Ensuite, elle actualise la liste des commandes et affiche un message de succès ou d'erreur en fonction du résultat.
+        /// </summary>
+        /// <param name="sender">L'objet émetteur de l'événement (le bouton cliqué).</param>
+        /// <param name="e">Les arguments de l'événement (données liées à l'événement de clic).</param>
         private void BT_ADD_NEW_COMMANDE_Click(object sender, EventArgs e)
         {
             controller.GetAllCommandes();
             // Générez l'ID dans FrmMediatek
-            string idCommande = controller.GenerateCommandeId();  // ID généré correctement ici
+            string idCommande = controller.GenerateCommandeId();  
             string idSuivi = controller.GenerateSuiviId();
             string idCommandeDocument = controller.GenerateCommandeDocumentId();
 
@@ -1782,5 +1942,24 @@ namespace MediaTekDocuments.view
             }
         }
 
+        #endregion
+
+        #region Helper
+        // Helper pour obtenir le libellé du statut
+        private string GetStatutLibelle(int statut)
+        {
+            switch (statut)
+            {
+                case 1: return "En cours";
+                case 2: return "Livré";
+                case 3: return "Disponible en points relais";
+                case 4: return "Annulé";
+                default: return "Inconnu";
+            }
+        }
+
+        #endregion
+
+        #endregion
     }
 }

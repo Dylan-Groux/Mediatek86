@@ -4,6 +4,7 @@ using MediaTekDocuments.dal;
 using System.Linq;
 using System;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace MediaTekDocuments.controller
 {
@@ -108,8 +109,8 @@ namespace MediaTekDocuments.controller
         {
             var commandes = access.GetAllCommandes();
 
-            string allIds = string.Join(", ", commandes.Select(c => c.Id));
-            MessageBox.Show("GetAllCommandes(): " + allIds);
+            //string allIds = string.Join(", ", commandes.Select(c => c.Id));
+            //MessageBox.Show("GetAllCommandes(): " + allIds);
 
             return commandes;
         }
@@ -123,11 +124,11 @@ namespace MediaTekDocuments.controller
         {
             var suivis = access.GetAllSuivi();
 
-            if (suivis == null)
-            {
-                MessageBox.Show("Erreur : La liste des suivis est vide.");
-                return new List<Suivi>(); // Retourne une liste vide si null
-            }
+           // if (suivis == null)
+           //{
+           //     MessageBox.Show("Erreur : La liste des suivis est vide.");
+           //     return new List<Suivi>(); // Retourne une liste vide si null
+           // }
 
             return suivis;
         }
@@ -235,7 +236,7 @@ namespace MediaTekDocuments.controller
                 .OrderByDescending(c => c.Id) 
                 .FirstOrDefault()?.Id;
 
-            MessageBox.Show("Dernier ID trouvé : " + lastCommandeId);
+            //MessageBox.Show("Dernier ID trouvé : " + lastCommandeId);
 
             if (allCommandes == null || allCommandes.Count == 0)
             {
@@ -244,7 +245,7 @@ namespace MediaTekDocuments.controller
             else
             {
                 string allIds = string.Join(", ", allCommandes.Select(c => c.Id));
-                MessageBox.Show("Commandes récupérées dans GenerateCommandeId(): " + allIds);
+                //MessageBox.Show("Commandes récupérées dans GenerateCommandeId(): " + allIds);
             }
 
             if (string.IsNullOrEmpty(lastCommandeId))
@@ -300,7 +301,7 @@ namespace MediaTekDocuments.controller
                 .OrderByDescending(c => c.id_suivi)
                 .FirstOrDefault()?.id_suivi;
 
-            MessageBox.Show("Dernier ID trouvé : " + lastSuiviId);
+            //MessageBox.Show("Dernier ID trouvé : " + lastSuiviId);
 
             if (allSuivis == null || allSuivis.Count == 0)
             {
@@ -309,7 +310,7 @@ namespace MediaTekDocuments.controller
             else
             {
                 string allIds = string.Join(", ", allSuivis.Select(c => c.id_suivi));
-                MessageBox.Show("Suivis récupérées dans GenerateSuiviId(): " + allIds);
+                //MessageBox.Show("Suivis récupérées dans GenerateSuiviId(): " + allIds);
             }
 
             if (string.IsNullOrEmpty(lastSuiviId))
@@ -366,7 +367,7 @@ namespace MediaTekDocuments.controller
                 .OrderByDescending(c => c.id_commandedocument)
                 .FirstOrDefault()?.id_commandedocument;
 
-            MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
+            //MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
 
             if (allCommandeDocuments == null || allCommandeDocuments.Count == 0)
             {
@@ -375,7 +376,7 @@ namespace MediaTekDocuments.controller
             else
             {
                 string allIds = string.Join(", ", allCommandeDocuments.Select(c => c.id_commandedocument));
-                MessageBox.Show("CommandeDocuments récupérées dans GenerateCommandeDocumentId(): " + allIds);
+                //MessageBox.Show("CommandeDocuments récupérées dans GenerateCommandeDocumentId(): " + allIds);
             }
 
             if (string.IsNullOrEmpty(lastCommandeDocumentId))
@@ -408,6 +409,18 @@ namespace MediaTekDocuments.controller
             return newCommandeDocumentId;
 
 
+        }
+
+
+        /// <summary>
+        /// Gère la mise à jour du statut d'une commande
+        /// </summary>
+        /// <param name="commandeId">ID de la commande</param>
+        /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
+        /// <returns>Retourne true si la mise à jour a réussi</returns>
+        public bool ModifierStatutCommande(string idSuivi, string commandeId, int nouveauStatut)
+        {
+            return access.UpdateStatutSuivi(idSuivi, commandeId, nouveauStatut);
         }
     }
 }
