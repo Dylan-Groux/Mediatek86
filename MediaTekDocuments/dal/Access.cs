@@ -12,6 +12,7 @@ using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text;
+using System.Net;
 
 namespace MediaTekDocuments.dal
 {
@@ -42,7 +43,7 @@ namespace MediaTekDocuments.dal
         private const string POST = "POST";
         /// <summary>
         /// méthode HTTP pour update
-
+        private const string DELETE = "DELETE";
         /// <summary>
         /// Méthode privée pour créer un singleton
         /// initialise l'accès à l'API
@@ -208,6 +209,39 @@ namespace MediaTekDocuments.dal
             }
             return liste;
         }
+
+        /// <summary>
+        /// Envoie une requête DELETE à l'API avec les paramètres spécifiés
+        /// </summary>
+        /// <param name="message">Nom de la table</param>
+        /// <param name="parametres">Paramètres de suppression au format "champs={...}"</param>
+        /// <returns>true si la suppression a réussi, false sinon</returns>
+        private bool TraitementDelete(string table, string jsonChamps)
+        {
+            try
+            {
+                string postData = "champs=" + WebUtility.UrlEncode(jsonChamps);
+
+                // Log de debug : ce qui est envoyé
+                MessageBox.Show("Tentative suppression\nTable : " + table + "\nData : " + postData, "DEBUG - DELETE");
+
+                JObject retour = api.RecupDistant(DELETE, table, postData);
+
+                string code = (string)retour["code"];
+                string retourMessage = (string)retour["message"];
+
+                MessageBox.Show("Code retour : " + code + "\nMessage : " + retourMessage, "DEBUG - Résultat API");
+
+                return code == "200";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception DELETE : " + ex.Message, "DEBUG - Exception");
+                return false;
+            }
+        }
+
+
 
         /// <summary>
         /// Convertit en json un couple nom/valeur
@@ -408,5 +442,64 @@ namespace MediaTekDocuments.dal
         #endregion
 
         #endregion
+
+        public bool SupprimerSuivi(Suivi suivi)
+        {
+            string jsonSuiviDelete = JsonConvert.SerializeObject(new { id = suivi.id_suivi });
+
+            //MessageBox.Show("Tentative de suppression du suivi.\nJSON envoyé :\n" + jsonSuiviDelete, "DEBUG");
+
+            try
+            {
+                return TraitementDelete("suivi", jsonSuiviDelete);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la suppression du suivi : " + ex.Message, "DEBUG - Exception");
+            }
+
+            return false;
+        }
+
+        public bool SupprimerCommandeDocument(CommandesDocuments commandedocument)
+        {
+            string jsonCommandeDocumentDelete = JsonConvert.SerializeObject(new { id = commandedocument.id_commandedocument });
+
+            // Affichage du JSON préparé
+            //MessageBox.Show("Tentative de suppression du CommandeDocument.\nDonnées envoyées :\n" + jsonCommandeDocumentDelete, "DEBUG - JSON CommandeDocument");
+
+            try
+            {
+                return TraitementDelete("commandedocument", jsonCommandeDocumentDelete);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la suppression du CommandeDocument : " + ex.Message, "DEBUG - Exception");
+                //MessageBox.Show("Données envoyées : " + jsonCommandeDocumentDelete, "DEBUG - JSON Envoyé");
+            }
+
+            return false;
+        }
+
+
+        public bool SupprimerCommande(Commande commande)
+        {
+            string jsonCommandeDelete = JsonConvert.SerializeObject(new { id = commande.Id });
+
+            // Affichage du JSON préparé
+            //MessageBox.Show("Tentative de suppression du Commande.\nDonnées envoyées :\n" + jsonCommandeDelete, "DEBUG - JSON Commande");
+
+            try
+            {
+                return TraitementDelete("commande", jsonCommandeDelete);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la suppression du Commande : " + ex.Message, "DEBUG - Exception");
+                //MessageBox.Show("Données envoyées : " + jsonCommandeDelete, "DEBUG - JSON Envoyé");
+            }
+
+            return false;
+        }
     }
 }

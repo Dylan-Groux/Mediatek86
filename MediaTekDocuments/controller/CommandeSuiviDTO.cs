@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediaTekDocuments.model;
 
 namespace MediaTekDocuments.controller
 {
@@ -15,8 +16,9 @@ namespace MediaTekDocuments.controller
         public string SuiviId { get; set; }
         public int StatutSuivi { get; set; }
         public DateTime? DateSuivi { get; set; }
-    
-    public string LibelleStatutSuivi
+        public CommandesDocuments LiaisonCommandeDocument { get; set; }
+
+        public string LibelleStatutSuivi
         {
             get
             {

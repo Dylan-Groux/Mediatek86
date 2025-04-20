@@ -1316,12 +1316,18 @@ namespace MediaTekDocuments.view
         {
             commandeSuivis = commandes;
 
-            // Réinitialise et recharge le DataGridView
+            // 🔁 Reset propre
             DATAGRID_COMMANDES.DataSource = null;
-            DATAGRID_COMMANDES.DataSource = commandeSuivis;
+            DATAGRID_COMMANDES.Columns.Clear();
 
-            #region paramètre de la  modification d'un statut 
-            var statuts = new List<Statut>
+            // 🔧 Création des colonnes visibles
+            var colId = new DataGridViewTextBoxColumn { Name = "CommandeId", HeaderText = "N° de la commande", DataPropertyName = "CommandeId" };
+            var colDateCmd = new DataGridViewTextBoxColumn { Name = "DateCommande", HeaderText = "Date de la commande", DataPropertyName = "DateCommande" };
+            var colMontant = new DataGridViewTextBoxColumn { Name = "Montant", HeaderText = "Montant (€)", DataPropertyName = "Montant" };
+            var colDateSuivi = new DataGridViewTextBoxColumn { Name = "DateSuivi", HeaderText = "Date de changement de suivi", DataPropertyName = "DateSuivi" };
+            var colLibelle = new DataGridViewTextBoxColumn { Name = "LibelleStatutSuivi", HeaderText = "Statut de suivi", DataPropertyName = "LibelleStatutSuivi" };
+
+            var statuts = new List<Statut> 
             {
                 new Statut { Value = 1, Libelle = "En cours" },
                 new Statut { Value = 2, Libelle = "Livré" },
@@ -1329,73 +1335,54 @@ namespace MediaTekDocuments.view
                 new Statut { Value = 4, Libelle = "Annulé" }
             };
 
-            var comboCol = new DataGridViewComboBoxColumn();
-            comboCol.Name = "ColonneStatutCombo";
-            comboCol.HeaderText = "Modifier le statut";
-            comboCol.DataSource = statuts;
-            comboCol.DisplayMember = "Libelle";
-            comboCol.ValueMember = "Value";
-            comboCol.DataPropertyName = "StatutSuivi"; // lie la valeur réelle
-            comboCol.DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton; // pour un look discret
-            #endregion
-            #region protection saisit utilisateur
-            // Empêche la sélection de lignes entières
+            var comboCol = new DataGridViewComboBoxColumn
+            {
+                Name = "ColonneStatutCombo",
+                HeaderText = "Modifier le statut",
+                DataPropertyName = "StatutSuivi",
+                DataSource = statuts,
+                DisplayMember = "Libelle",
+                ValueMember = "Value",
+                DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
+            };
+
+            var btnCol = new DataGridViewButtonColumn
+            {
+                Name = "ColonneSuppression",
+                HeaderText = "Supprimer une commande",
+                Text = "❌ Supprimer",
+                UseColumnTextForButtonValue = true
+            };
+
+            // ⛓️ Ajout manuel des colonnes
+            DATAGRID_COMMANDES.Columns.AddRange(colId, colDateCmd, colMontant, colDateSuivi, colLibelle, comboCol, btnCol);
+
+            // 🧷 Paramètres globaux
+            DATAGRID_COMMANDES.AutoGenerateColumns = false;
             DATAGRID_COMMANDES.SelectionMode = DataGridViewSelectionMode.CellSelect;
-
-            // Empêche la sélection de plusieurs lignes
             DATAGRID_COMMANDES.MultiSelect = false;
-
-            // Rend la grille en lecture seule
-            DATAGRID_COMMANDES.ReadOnly = true;
-
-            // Cache la colonne de sélection à gauche (avec les petites flèches)
             DATAGRID_COMMANDES.RowHeadersVisible = false;
-
-            // Empêche l'ajout de nouvelles lignes
             DATAGRID_COMMANDES.AllowUserToAddRows = false;
-
-            // Empêche la suppression de lignes
             DATAGRID_COMMANDES.AllowUserToDeleteRows = false;
-
-            // Empêche la modification du redimensionnement manuel des colonnes
             DATAGRID_COMMANDES.AllowUserToResizeColumns = false;
-
-            // Empêche la modification du redimensionnement manuel des lignes
             DATAGRID_COMMANDES.AllowUserToResizeRows = false;
-            #endregion
 
-            // Masque les colonnes techniques
-            DATAGRID_COMMANDES.Columns["SuiviId"].Visible = false;
-            DATAGRID_COMMANDES.Columns["StatutSuivi"].Visible = false;
-
-            // En tête de la Dgv
-            DATAGRID_COMMANDES.Columns["CommandeId"].HeaderText = "N° de la commande";
-            DATAGRID_COMMANDES.Columns["DateCommande"].HeaderText = "Date de la commande";
-            DATAGRID_COMMANDES.Columns["Montant"].HeaderText = "Montant (€)";
-            DATAGRID_COMMANDES.Columns["DateSuivi"].HeaderText = "Date de changement de suivi";
-            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].HeaderText = "Statut de suivi";
-            DATAGRID_COMMANDES.Columns.Add(comboCol);
-
-            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DATAGRID_COMMANDES.Columns["CommandeId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DATAGRID_COMMANDES.Columns["DateSuivi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-            // Réorganise l'ordre des colonnes
-            DATAGRID_COMMANDES.Columns["CommandeId"].DisplayIndex = 1;
-            DATAGRID_COMMANDES.Columns["DateCommande"].DisplayIndex = 2;
-            DATAGRID_COMMANDES.Columns["Montant"].DisplayIndex = 3;
-            DATAGRID_COMMANDES.Columns["DateSuivi"].DisplayIndex = 4;
-            DATAGRID_COMMANDES.Columns["LibelleStatutSuivi"].DisplayIndex = 5;
-            DATAGRID_COMMANDES.Columns["ColonneStatutCombo"].DisplayIndex = 6;
-
+            // 🧊 Rendre tout ReadOnly sauf statut combo
             DATAGRID_COMMANDES.ReadOnly = false;
+            foreach (DataGridViewColumn col in DATAGRID_COMMANDES.Columns)
+                col.ReadOnly = col.Name != "ColonneStatutCombo";
 
-            // Permet de rendre modifiable uniquement la colonne voulu
+            // 🧯 Tri désactivé sur les colonnes sensibles
             foreach (DataGridViewColumn col in DATAGRID_COMMANDES.Columns)
             {
-                col.ReadOnly = col.Name != "ColonneStatutCombo";
+                if (col.Name == "ColonneStatutCombo" || col.Name == "ColonneSuppression")
+                    col.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
+
+            // 🎯 Définir la source de données maintenant
+            DATAGRID_COMMANDES.DataSource = commandeSuivis;
         }
+
 
         /// <summary>
         /// Tri sur les colonnes
@@ -1409,6 +1396,12 @@ namespace MediaTekDocuments.view
             List<CommandeSuiviDTO> sortedList = new List<CommandeSuiviDTO>();
             switch (titreColonne)
             {
+                case "Supprimer une commande":
+                    {
+                        RemplirCommandeAvecSuivi(commandeSuivisBase);
+                    }
+                    return;
+
                 case "N° de la commande":
                     if (isAscending)
                     {
@@ -1454,6 +1447,7 @@ namespace MediaTekDocuments.view
                     break;
 
                 case "Statut de suivi":
+                case "Modifier le statut":
                     if (isAscending)
                     {
                         sortedList = commandeSuivis.OrderBy(o => o.LibelleStatutSuivi).ToList();
@@ -1961,5 +1955,58 @@ namespace MediaTekDocuments.view
         #endregion
 
         #endregion
+
+        private void DATAGRID_COMMANDES_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
+            {
+                var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
+                if (row != null && row.StatutSuivi >= 3)
+                {
+                    string idSuivi = row.SuiviId;
+                    string idCommande = row.CommandeId;
+                    string commandedocumentId = row.LiaisonCommandeDocument?.id_commandedocument;
+
+                    bool successS = controller.SupprimerSuivi(idSuivi);
+                    if (successS)
+                    {
+                        MessageBox.Show("Suivi supprimé avec succès !");
+                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression du suivi !");
+                    }
+
+                    bool successCD = controller.SupprimerCommandeDocument(commandedocumentId);
+                    if (successCD)
+                    {
+                        MessageBox.Show("Commande supprimé avec succès !");
+                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression d'une commande' !");
+                    }
+
+                    bool successC = controller.SupprimerCommande(idCommande);
+                    if (successC)
+                    {
+                        MessageBox.Show("Commande supprimé avec succès !");
+                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression d'une commande' !");
+                    }
+                }
+            }
+            if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex > 0)
+            {
+                var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
+                if (row != null && row.StatutSuivi <= 2)
+                    MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 }

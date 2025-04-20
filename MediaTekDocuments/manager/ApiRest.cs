@@ -85,7 +85,13 @@ namespace MediaTekDocuments.manager
                         httpResponse = httpClient.PutAsync(message, content).Result;
                         break;
                     case "DELETE":
-                        httpResponse = httpClient.DeleteAsync(message).Result;
+                        var request = new HttpRequestMessage
+                        {
+                            Method = HttpMethod.Delete,
+                            RequestUri = new Uri(httpClient.BaseAddress + message),
+                            Content = content
+                        };
+                        httpResponse = httpClient.SendAsync(request).Result;
                         break;
                     // methode incorrecte
                     default:

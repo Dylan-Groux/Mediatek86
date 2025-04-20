@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.ComponentModel.Design;
 
 namespace MediaTekDocuments.controller
 {
@@ -151,6 +152,7 @@ namespace MediaTekDocuments.controller
         {
             var commandes = GetAllCommandes();
             var suivis = GetAllSuivi();
+            var commandesdocuments = GetAllCommnadesDocuments();
 
             // Log pour vérifier la taille des listes
             // MessageBox.Show($"Commandes : {commandes.Count}, Suivis : {suivis.Count}");
@@ -159,6 +161,7 @@ namespace MediaTekDocuments.controller
             var result = from c in commandes
                          join s in suivis on c.Id equals s.IdCommande into csGroup
                          from s in csGroup.DefaultIfEmpty()  // Utilisation de DefaultIfEmpty pour gérer les suivis nuls
+                         let doc = commandesdocuments.FirstOrDefault(cd => cd.id_commande == c.Id)
                          select new CommandeSuiviDTO
                          {
                              CommandeId = c.Id,
@@ -167,7 +170,8 @@ namespace MediaTekDocuments.controller
                              // Vérifier si 's' est null avant d'accéder à ses propriétés
                              SuiviId = s != null ? s.id_suivi : null,
                              DateSuivi = s?.DateSuivi,
-                             StatutSuivi = s?.Status ?? -1 // Gestion du cas où 's' est null
+                             StatutSuivi = s?.Status ?? -1,// Gestion du cas où 's' est null
+                             LiaisonCommandeDocument = doc
                          };
 
             // Retourner le résultat sous forme de liste
@@ -283,8 +287,8 @@ namespace MediaTekDocuments.controller
 
         /// <summary>
         /// Génère un ID pour la table commande id
-        /// <desc>
-        /// On récupère ici la totalité des commandes via un appel APi direct, on le stock dans une varaible allCommandes,
+        /// <desc>erdfhjnjjjjjjjjjjjjjjjjjjjjjjjjjjjjjeds&ééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééét(-------
+        /// tgyhioxkc/// On récupère ici la totalité des commandes via un appel APi direct, on le stock dans une varaible allCommandes,
         /// On exploite cette variable en la triant par ordre décroissant en triant par l'ID, stock dans une variable lastCommandeId
         /// Si null dans ce cas on affiche C001 car ce serait la première commande, sinon on extrait le préfix et la partie numérique dans deux variables
         /// dans notre cas on force le préfix "C" => contrôle saisit utilisateur au cas ou.
@@ -422,5 +426,27 @@ namespace MediaTekDocuments.controller
         {
             return access.UpdateStatutSuivi(idSuivi, commandeId, nouveauStatut);
         }
+
+        public bool SupprimerCommande(string commandeId)
+        {
+            MessageBox.Show(commandeId);
+            var commande = new Commande { Id = commandeId };
+            return access.SupprimerCommande(commande);
+        }
+
+        public bool SupprimerCommandeDocument(string commandedocumentId)
+        {
+            MessageBox.Show(commandedocumentId);
+            var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId  };
+            return access.SupprimerCommandeDocument(commandedocument);
+        }
+
+        public bool SupprimerSuivi(string idSuivi)
+        {
+            MessageBox.Show(idSuivi);
+            var suivi = new Suivi { id_suivi = idSuivi };
+            return access.SupprimerSuivi(suivi);
+        }
+
     }
 }
