@@ -415,7 +415,6 @@ namespace MediaTekDocuments.controller
 
         }
 
-
         /// <summary>
         /// Gère la mise à jour du statut d'une commande
         /// </summary>
@@ -441,6 +440,14 @@ namespace MediaTekDocuments.controller
             return access.SupprimerCommandeDocument(commandedocument);
         }
 
+        public bool SupprimerNbExemplaire(string commandedocumentId)
+        {
+            MessageBox.Show(commandedocumentId);
+            var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId };
+            return access.SupprimerCommandeDocument(commandedocument);
+        }
+
+
         public bool SupprimerSuivi(string idSuivi)
         {
             MessageBox.Show(idSuivi);
@@ -448,5 +455,113 @@ namespace MediaTekDocuments.controller
             return access.SupprimerSuivi(suivi);
         }
 
+        #region DocumentUnitaire
+        public List<DocumentUnitaire> GetAllDocumentUnitaires()
+        {
+           var documentunitaire = access.GetAllDocumentUnitaires();
+
+            return documentunitaire;
+        }
+
+
+        /// <summary>
+        /// Crée une nouvelle donnée de suivi dans la BDD
+        /// </summary>
+        /// <param name="suivi"></param>
+        /// <returns></returns>
+        public bool CreerDocumentUnitaire(DocumentUnitaire documentUnitaire)
+        {
+            return access.CreerDocumentUnitaire(documentUnitaire);
+        }
+
+
+        public string GenerateDocumentUnitaireId()
+        {
+            var allDocumentUnitaire = access.GetAllDocumentUnitaires();
+            var lastCommandeDocumentId = allDocumentUnitaire
+                .OrderByDescending(c => c.Id)
+                .FirstOrDefault()?.Id;
+
+            MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
+
+            if (allDocumentUnitaire == null || allDocumentUnitaire.Count == 0)
+            {
+                MessageBox.Show("Aucune CommandeDocument trouvée dans GenerateCommandeDocumentId()");
+            }
+            else
+            {
+                string allIds = string.Join(", ", allDocumentUnitaire.Select(c => c.Id));
+                //MessageBox.Show("DocumentUnitaire récupérées dans GenerateCommandeDocumentId(): " + allIds);
+            }
+
+            if (string.IsNullOrEmpty(lastCommandeDocumentId))
+            {
+                return "DU00001";
+            }
+
+            // Extraire la partie numérique de l'ID, en excluant le préfixe (par exemple, "C001" -> "001", "MD000" -> "000")
+            string prefix = new string(lastCommandeDocumentId.TakeWhile(char.IsLetter).ToArray()); // Extrait le préfixe, par exemple "C"
+            string numberPart = new string(lastCommandeDocumentId.SkipWhile(char.IsLetter).ToArray()); // Extrait la partie numérique
+
+            // Si le préfixe n'est pas "S", forcer "S" comme préfixe pour les nouvelles DocumentUnitaire
+            if (prefix != "DU")
+            {
+                prefix = "DU";
+            }
+
+            // Vérifie que la partie numérique est un nombre valide
+            if (!int.TryParse(numberPart, out int lastNumber))
+            {
+                throw new FormatException($"Le suffixe de l'ID de la CommandeDocument n'est pas un nombre valide : {numberPart}");
+            }
+
+            // Incrémenter de 1
+            int newNumber = lastNumber + 1;
+
+            // Formater l'ID avec le préfixe et un padding de 3 chiffres (par exemple, "C001" si le préfixe est "C")
+            string newCommandeDocumentId = prefix + newNumber.ToString("D5"); // Utilise "D5" pour s'assurer que le nombre a toujours 3 chiffres
+            MessageBox.Show(newCommandeDocumentId);
+            return newCommandeDocumentId;
+        }
+
+        public void GenererDocumentUnitairesPourCommande(CommandesDocuments commande)
+        {
+            for (int i = 0; i < commande.nbExemplaire; i++)
+            {
+                DocumentUnitaire nouveauDocumentUnitaire = new DocumentUnitaire
+                {
+                    Id = GenerateDocumentUnitaireId(), // tu vas créer cette méthode juste en dessous
+                    IdDocument = commande.id_document,
+                    Etat = 1, // état "neuf"
+                    DateAchat = DateTime.Now,
+                    IdCommande = commande.id_commande,
+                };
+
+                bool success = CreerDocumentUnitaire(nouveauDocumentUnitaire);
+                if (!success)
+                {
+                    MessageBox.Show($"Erreur lors de la création de l'exemplaire {i + 1} pour le document {commande.id_document}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gère la mise à jour du statut d'une commande
+        /// </summary>
+        /// <param name="commandeId">ID de la commande</param>
+        /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
+        /// <returns>Retourne true si la mise à jour a réussi</returns>
+        public bool ModifierEtatDocumentUnitaire(string Id, int nouveauStatut)
+        {
+            return access.UpdateEtatDocumentUnitaire(Id, nouveauStatut);
+        }
+
+        public bool SupprimerDocumentUnitaire(string Id)
+        {
+            MessageBox.Show(Id);
+            var documentUnitaire = new DocumentUnitaire { Id = Id };
+            return access.SupprimerDocumentUnitaire(documentUnitaire);
+        }
+        #endregion
     }
 }

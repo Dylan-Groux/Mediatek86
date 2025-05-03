@@ -12,6 +12,8 @@ using System.Xml.Linq;
 using MediaTekDocuments;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace MediaTekDocuments.view
 
@@ -1327,7 +1329,7 @@ namespace MediaTekDocuments.view
             var colDateSuivi = new DataGridViewTextBoxColumn { Name = "DateSuivi", HeaderText = "Date de changement de suivi", DataPropertyName = "DateSuivi" };
             var colLibelle = new DataGridViewTextBoxColumn { Name = "LibelleStatutSuivi", HeaderText = "Statut de suivi", DataPropertyName = "LibelleStatutSuivi" };
 
-            var statuts = new List<Statut> 
+            var statuts = new List<Statut>
             {
                 new Statut { Value = 1, Libelle = "En cours" },
                 new Statut { Value = 2, Libelle = "Livré" },
@@ -1644,10 +1646,10 @@ namespace MediaTekDocuments.view
         #endregion
 
         #region "Liste des livres disponibles"
-            /// <summary>
-            /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
-            /// </summary>
-            /// <param name="livresCommandes"></param>
+        /// <summary>
+        /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
+        /// </summary>
+        /// <param name="livresCommandes"></param>
         private void RemplirLivresListeCommandes(List<Livre> livresCommandes)
         {
             bdgLivresListe.DataSource = livresCommandes;
@@ -1760,7 +1762,7 @@ namespace MediaTekDocuments.view
         {
             currentIdDocument = idDocument;
 
-            List<CommandesDocuments>  commandesDocuments = controller.GetAllCommnadesDocuments(); 
+            List<CommandesDocuments> commandesDocuments = controller.GetAllCommnadesDocuments();
             // Récupérer toutes les commandes associées à l'id_document
             commandesDocuments = controller.GetAllCommnadesDocuments();
 
@@ -1882,7 +1884,7 @@ namespace MediaTekDocuments.view
             {
                 if (!combo.Items.Cast<Statut>().Any(s => s.Value == (int)combo.SelectedValue))
                 {
-                    e.Cancel = true; 
+                    e.Cancel = true;
                 }
             }
         }
@@ -1901,7 +1903,7 @@ namespace MediaTekDocuments.view
         {
             controller.GetAllCommandes();
             // Générez l'ID dans FrmMediatek
-            string idCommande = controller.GenerateCommandeId();  
+            string idCommande = controller.GenerateCommandeId();
             string idSuivi = controller.GenerateSuiviId();
             string idCommandeDocument = controller.GenerateCommandeDocumentId();
 
@@ -1919,7 +1921,10 @@ namespace MediaTekDocuments.view
                     bool liaisonOK = controller.CreerCommandeDocument(liaison);
 
                     if (suiviOK && liaisonOK)
-                        MessageBox.Show("Commande, suivi et liaison créés avec succès !");
+                    {
+                        controller.GenererDocumentUnitairesPourCommande(liaison);
+                        MessageBox.Show("Commande, suivi, liaison et documents unitaires créés avec succès !");
+                    }
                     else
                         MessageBox.Show("Commande créée mais erreur sur le suivi ou la liaison.");
 
@@ -2005,6 +2010,346 @@ namespace MediaTekDocuments.view
             {
                 var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
                 if (row != null && row.StatutSuivi <= 2)
+                    MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        #region Onglet Livres disponibles 
+        //Variables 
+        List<Livre> livresdisponibles = new List<Livre>();
+        private List<DocumentUnitaire> documentUnitaires = new List<DocumentUnitaire>();
+
+        private void TAB_COMMANDE_Enter_1(object sender, EventArgs e)
+        {
+            lesCommandes = controller.GetAllCommandes();
+            lesSuivi = controller.GetAllSuivi();
+            lesCommandesDocuments = controller.GetAllCommnadesDocuments();
+
+            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+            commandeSuivis = new List<CommandeSuiviDTO>(commandeSuivisBase);
+            RemplirCommandesListeComplete();
+
+            lesLivres = controller.GetAllLivres();
+            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
+            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
+            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
+
+            documentUnitaires = controller.GetAllDocumentUnitaires();
+
+            RemplirListeLivresDisponibleComplete();
+            RemplirLivresListeDisponible(livresdisponibles);
+        }
+
+        private void RemplirListeLivresDisponibleComplete()
+        {
+            VideLivresZones();
+            //Remplissage de la DataGridView des Livres
+            RemplirLivresListeCommandes(lesLivres);
+        }
+
+        /// <summary>
+        /// Permet de recharger complètement la liste des commandes
+        /// </summary>
+        private void LoadDocumentUnitaire()
+        {
+            List<DocumentUnitaire> documentUnitaires = controller.GetAllDocumentUnitaires();
+            ConfigurerColonnesDgvExemplaires(documentUnitaires);
+        }
+
+        /// <summary>
+        /// Rempli la Dgv de "Liste des livres disponibles" dans la "section commandes des livres"
+        /// </summary>
+        /// <param name="livresCommandes"></param>
+        private void RemplirLivresListeDisponible(List<Livre> livresCommandes)
+        {
+            bdgLivresListe.DataSource = livresCommandes;
+            DATAGRID_LIVRES_DISPONIBLES.DataSource = bdgLivresListe;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["isbn"].Visible = false;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["idRayon"].Visible = false;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["idGenre"].Visible = false;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["idPublic"].Visible = false;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["image"].Visible = false;
+            DATAGRID_LIVRES_DISPONIBLES.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["id"].DisplayIndex = 0;
+            DATAGRID_LIVRES_DISPONIBLES.Columns["titre"].DisplayIndex = 1;
+        }
+
+
+        #endregion
+
+        private void DATAGRID_LIVRES_DISPONIBLES_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0) 
+            {
+                var selectedLivre = DATAGRID_LIVRES_DISPONIBLES.Rows[e.RowIndex].DataBoundItem as Livre;
+                if (selectedLivre != null)
+                {
+                    string idLivre = selectedLivre.Id;
+
+                    //MessageBox.Show(documentUnitaires.Count().ToString());
+                    //Filtrage de la liste
+                    var exemplaires = documentUnitaires
+                        .Where(doc=> doc.IdDocument == idLivre)
+                        .ToList();
+
+                    ConfigurerColonnesDgvExemplaires(exemplaires);
+                }
+            }
+        }
+
+        private void ConfigurerColonnesDgvExemplaires(List<DocumentUnitaire> exemplaires)
+            {
+                Debug.WriteLine("▶ Début de ConfigurerColonnesDgvExemplaires");
+
+                // Vérification des objets critiques
+                if (documentUnitaires == null)
+                {
+                    Debug.WriteLine("❌ documentUnitaires est null, arrêt de la méthode.");
+                    return;
+                }
+
+                if (NOMBRE_EXEMPLE_LIVRES == null)
+                {
+                    Debug.WriteLine("❌ NOMBRE_EXEMPLE_LIVRES est null, arrêt de la méthode.");
+                    return;
+                }
+
+                Debug.WriteLine($"✅ {documentUnitaires.Count} exemplaires à afficher.");
+
+                // Reset propre du DataGridView
+                Debug.WriteLine("ℹ️ Reset des colonnes et datasource du DataGridView.");
+                NOMBRE_EXEMPLE_LIVRES.DataSource = null;
+                NOMBRE_EXEMPLE_LIVRES.Columns.Clear();
+
+                // Préparation des colonnes
+                Debug.WriteLine("ℹ️ Création des colonnes...");
+
+                var colIdCommande = new DataGridViewTextBoxColumn
+                {
+                    Name = "IdCommande",
+                    HeaderText = "N° de la commande",
+                    DataPropertyName = "IdCommande"
+                };
+
+                var colIdExemplaire = new DataGridViewTextBoxColumn
+                {
+                    Name = "Id",
+                    HeaderText = "Identifiant",
+                    DataPropertyName = "Id"
+                };
+
+                var colLibelleEtatLivre = new DataGridViewTextBoxColumn
+                {
+                    Name = "LibelleEtatDocument",
+                    HeaderText = "Etat du livre",
+                    DataPropertyName = "LibelleEtatDocument"
+                };
+
+                var colDateAt = new DataGridViewTextBoxColumn
+                {
+                    Name = "DateAchat",
+                    HeaderText = "Date de l'achat",
+                    DataPropertyName = "DateAchat"
+                };
+
+                var btnColSupression = new DataGridViewButtonColumn
+                {
+                    Name = "ColonneSuppression",
+                    HeaderText = "Supprimer un livre",
+                    Text = "❌ Supprimer",
+                    UseColumnTextForButtonValue = true
+                };
+
+                var statuts = new List<Statut>
+                {
+                    new Statut { Value = 1, Libelle = "Neuf" },
+                    new Statut { Value = 2, Libelle = "Très bon" },
+                    new Statut { Value = 3, Libelle = "Moyen" },
+                    new Statut { Value = 4, Libelle = "Endommagé" },
+                    new Statut { Value = 5, Libelle = "Illisible" }
+                };
+
+                var comboCol = new DataGridViewComboBoxColumn
+                {
+                    Name = "ColonneStatutCombo",
+                    HeaderText = "Modifier le statut",
+                    DataPropertyName = "Etat",
+                    DataSource = statuts,
+                    DisplayMember = "Libelle",
+                    ValueMember = "Value",
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.DropDownButton
+                };
+
+                Debug.WriteLine("✅ Colonnes créées avec succès.");
+
+                Debug.WriteLine("ℹ️ Ajout des colonnes au DataGridView...");
+                // ⛓️ Ajout manuel des colonnes
+                NOMBRE_EXEMPLE_LIVRES.Columns.AddRange(colIdExemplaire, colIdCommande, colDateAt, colLibelleEtatLivre, comboCol, btnColSupression);
+
+                Debug.WriteLine("ℹ️ Implémentation des paramètre globaux au DataGridView...");
+                // 🧷 Paramètres globaux
+                NOMBRE_EXEMPLE_LIVRES.AutoGenerateColumns = false;
+                NOMBRE_EXEMPLE_LIVRES.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                NOMBRE_EXEMPLE_LIVRES.MultiSelect = false;
+                NOMBRE_EXEMPLE_LIVRES.RowHeadersVisible = false;
+                NOMBRE_EXEMPLE_LIVRES.AllowUserToAddRows = false;
+                NOMBRE_EXEMPLE_LIVRES.AllowUserToDeleteRows = false;
+                NOMBRE_EXEMPLE_LIVRES.AllowUserToResizeColumns = false;
+                NOMBRE_EXEMPLE_LIVRES.AllowUserToResizeRows = false;
+
+                Debug.WriteLine("✅ Colonnes ajoutées.");
+
+
+                // 🧊 Rendre tout ReadOnly sauf statut combo
+                NOMBRE_EXEMPLE_LIVRES.ReadOnly = false;
+                foreach (DataGridViewColumn col in NOMBRE_EXEMPLE_LIVRES.Columns)
+                    col.ReadOnly = col.Name != "ColonneStatutCombo";
+
+                // 🧯 Tri désactivé sur les colonnes sensibles
+                foreach (DataGridViewColumn col in NOMBRE_EXEMPLE_LIVRES.Columns)
+                {
+                    if (col.Name == "ColonneStatutCombo" || col.Name == "ColonneSuppression")
+                        col.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+
+                // Assignation de la datasource
+                 Debug.WriteLine("ℹ️ Affectation de la DataSource au DataGridView.");
+                NOMBRE_EXEMPLE_LIVRES.DataSource = exemplaires;
+
+                // Masquage des colonnes inutiles si elles existent
+                Debug.WriteLine("ℹ️ Tentative de masquage des colonnes Etat et IdDocument (si présentes).");
+                if (NOMBRE_EXEMPLE_LIVRES.Columns.Contains("Etat"))
+                {
+                    NOMBRE_EXEMPLE_LIVRES.Columns["Etat"].Visible = false;
+                }
+                if (NOMBRE_EXEMPLE_LIVRES.Columns.Contains("IdDocument"))
+                {
+                    NOMBRE_EXEMPLE_LIVRES.Columns["IdDocument"].Visible = false;
+                }
+
+
+            Debug.WriteLine("✅ DataSource affectée avec succès.");
+                Debug.WriteLine("▶ Fin de ConfigurerColonnesDgvExemplaires");
+            }
+
+        private async void NOMBRE_EXEMPLE_LIVRES_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (NOMBRE_EXEMPLE_LIVRES.CurrentCell.ColumnIndex == NOMBRE_EXEMPLE_LIVRES.Columns["ColonneStatutCombo"].Index)
+            {
+                ComboBox combo = e.Control as ComboBox;
+                if (combo != null)
+                {
+                    // Récupère la ligne et le statut actuel
+                    var row = NOMBRE_EXEMPLE_LIVRES.CurrentRow?.DataBoundItem as DocumentUnitaire;
+                    if (row != null)
+                    {
+                        int statutActuel = row.Etat;
+
+                        // Liste dynamique des statuts autorisés (>= statut actuel)
+                        var statutsAutorises = new List<Statut>
+                        { 
+                            new Statut { Value = 1, Libelle = "Neuf" },
+                            new Statut { Value = 2, Libelle = "Très bon" },
+                            new Statut { Value = 3, Libelle = "Moyen" },
+                            new Statut { Value = 4, Libelle = "Endommagé" },
+                            new Statut { Value = 5, Libelle = "Illisible" }
+                        }
+                        .Where(s => s.Value >= statutActuel)
+                        .ToList();
+
+                        // Retarder la mise à jour du DataSource pour éviter les conflits
+                        await Task.Delay(100);
+
+                        // Liaison à la comboBox
+                        combo.DataSource = null; // important avant de le changer
+                        combo.DisplayMember = "Libelle";
+                        combo.ValueMember = "Value";
+                        combo.DataSource = statutsAutorises;
+
+                        // Si la valeur actuelle n'est pas valide dans la liste, on l'ajoute temporairement
+                        if (!statutsAutorises.Any(s => s.Value == statutActuel))
+                        {
+                            // Ajoute la valeur actuelle (même si elle ne fait pas partie de la liste) pour la maintenir
+                            statutsAutorises.Insert(0, new Statut { Value = statutActuel, Libelle = GetStatutLibelle(statutActuel) });
+                            combo.SelectedValue = statutActuel;
+                        }
+                        else
+                        {
+                            // Si c'est valide, on sélectionne la valeur dans la ComboBox
+                            combo.SelectedValue = statutActuel;
+                        }
+
+                        // Ajoute un gestionnaire d'événement pour valider lors de la sélection
+                        combo.Validating -= ComboBox_Validating;
+                        combo.Validating += ComboBox_Validating;
+                    }
+                }
+            }
+        }
+
+        private void NOMBRE_EXEMPLE_LIVRES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneStatutCombo")
+            {
+                var row = NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].DataBoundItem as DocumentUnitaire;
+                if (row != null)
+                {
+                    int nouveauStatut = (int)NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+
+                    string Id = row.Id;
+
+                    // Création de l'objet Suivi avec la nouvelle valeur
+                    DocumentUnitaire suiviModifie = new DocumentUnitaire
+                    {
+                        Id = row.Id,
+                        IdDocument = row.IdDocument,
+                        Etat = nouveauStatut,
+                        DateAchat = row.DateAchat,
+                        IdCommande = row.IdCommande
+                    };
+
+                    // Envoi à l'API via la méthode existante
+                    bool success = controller.ModifierEtatDocumentUnitaire(Id, nouveauStatut);
+
+                    if (success)
+                    {
+                        MessageBox.Show("Statut modifié avec succès !");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la modification du statut.");
+                    }
+                }
+            }
+        }
+
+        private void NOMBRE_EXEMPLE_LIVRES_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
+            {
+                var row = NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].DataBoundItem as DocumentUnitaire;
+                if (row != null && row.Etat >= 4)
+                {
+                    string Id = row.Id;
+
+
+                    bool success = controller.SupprimerDocumentUnitaire(Id);
+                    if (success)
+                    {
+                        MessageBox.Show("Livre supprimé avec succès !");
+                        LoadDocumentUnitaire(); // Recharge la DGV si tu veux la MAJ directe
+                    }
+                    else
+                    {
+                        MessageBox.Show("Erreur lors de la suppression du Livre !");
+                    }
+
+                }
+            }
+            if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex > 0)
+            {
+                var row = NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].DataBoundItem as DocumentUnitaire;
+                if (row != null && row.Etat <= 3)
                     MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

@@ -213,6 +213,14 @@ namespace MediaTekDocuments.view
             this.TEST_GETTALLCOMMANDESDOCUMENTS = new System.Windows.Forms.Button();
             this.BT_CLEAR_CHOICE_COMMANDES_ID = new System.Windows.Forms.Button();
             this.LABEL_CHOICE_COMMANDE_ID = new System.Windows.Forms.Label();
+            this.LIVRE_DISPONIBLE = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.NOMBRE_EXEMPLE_LIVRES = new System.Windows.Forms.DataGridView();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label67 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.DATAGRID_LIVRES_DISPONIBLES = new System.Windows.Forms.DataGridView();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.TAB_COMMANDE.SuspendLayout();
             this.tabLivres.SuspendLayout();
@@ -246,6 +254,11 @@ namespace MediaTekDocuments.view
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES_DOCUMENTS)).BeginInit();
+            this.LIVRE_DISPONIBLE.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NOMBRE_EXEMPLE_LIVRES)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_LIVRES_DISPONIBLES)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -256,6 +269,7 @@ namespace MediaTekDocuments.view
             this.TAB_COMMANDE.Controls.Add(this.tabRevues);
             this.TAB_COMMANDE.Controls.Add(this.tabReceptionRevue);
             this.TAB_COMMANDE.Controls.Add(this.tabCommandes);
+            this.TAB_COMMANDE.Controls.Add(this.LIVRE_DISPONIBLE);
             this.TAB_COMMANDE.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TAB_COMMANDE.ItemSize = new System.Drawing.Size(49, 18);
             this.TAB_COMMANDE.Location = new System.Drawing.Point(0, 0);
@@ -263,7 +277,7 @@ namespace MediaTekDocuments.view
             this.TAB_COMMANDE.SelectedIndex = 0;
             this.TAB_COMMANDE.Size = new System.Drawing.Size(915, 776);
             this.TAB_COMMANDE.TabIndex = 0;
-            this.TAB_COMMANDE.Enter += new System.EventHandler(this.TAB_COMMANDE_Enter);
+            this.TAB_COMMANDE.Enter += new System.EventHandler(this.TAB_COMMANDE_Enter_1);
             // 
             // tabLivres
             // 
@@ -2192,6 +2206,103 @@ namespace MediaTekDocuments.view
             this.LABEL_CHOICE_COMMANDE_ID.TabIndex = 12;
             this.LABEL_CHOICE_COMMANDE_ID.Text = "Rechercher un numéro de commande : ";
             // 
+            // LIVRE_DISPONIBLE
+            // 
+            this.LIVRE_DISPONIBLE.Controls.Add(this.groupBox3);
+            this.LIVRE_DISPONIBLE.Controls.Add(this.button2);
+            this.LIVRE_DISPONIBLE.Controls.Add(this.textBox1);
+            this.LIVRE_DISPONIBLE.Controls.Add(this.label67);
+            this.LIVRE_DISPONIBLE.Controls.Add(this.groupBox2);
+            this.LIVRE_DISPONIBLE.Location = new System.Drawing.Point(4, 22);
+            this.LIVRE_DISPONIBLE.Name = "LIVRE_DISPONIBLE";
+            this.LIVRE_DISPONIBLE.Padding = new System.Windows.Forms.Padding(3);
+            this.LIVRE_DISPONIBLE.Size = new System.Drawing.Size(907, 750);
+            this.LIVRE_DISPONIBLE.TabIndex = 6;
+            this.LIVRE_DISPONIBLE.Text = "Livres disponibles ";
+            this.LIVRE_DISPONIBLE.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.NOMBRE_EXEMPLE_LIVRES);
+            this.groupBox3.Location = new System.Drawing.Point(3, 227);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(892, 278);
+            this.groupBox3.TabIndex = 32;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Nombre d\'exemplaire d\'un livre";
+            // 
+            // NOMBRE_EXEMPLE_LIVRES
+            // 
+            this.NOMBRE_EXEMPLE_LIVRES.AllowUserToAddRows = false;
+            this.NOMBRE_EXEMPLE_LIVRES.AllowUserToDeleteRows = false;
+            this.NOMBRE_EXEMPLE_LIVRES.AllowUserToResizeColumns = false;
+            this.NOMBRE_EXEMPLE_LIVRES.AllowUserToResizeRows = false;
+            this.NOMBRE_EXEMPLE_LIVRES.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.NOMBRE_EXEMPLE_LIVRES.Location = new System.Drawing.Point(9, 19);
+            this.NOMBRE_EXEMPLE_LIVRES.MultiSelect = false;
+            this.NOMBRE_EXEMPLE_LIVRES.Name = "NOMBRE_EXEMPLE_LIVRES";
+            this.NOMBRE_EXEMPLE_LIVRES.ReadOnly = true;
+            this.NOMBRE_EXEMPLE_LIVRES.RowHeadersVisible = false;
+            this.NOMBRE_EXEMPLE_LIVRES.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.NOMBRE_EXEMPLE_LIVRES.Size = new System.Drawing.Size(750, 244);
+            this.NOMBRE_EXEMPLE_LIVRES.TabIndex = 21;
+            this.NOMBRE_EXEMPLE_LIVRES.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.NOMBRE_EXEMPLE_LIVRES_CellContentClick);
+            this.NOMBRE_EXEMPLE_LIVRES.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.NOMBRE_EXEMPLE_LIVRES_CellValueChanged);
+            this.NOMBRE_EXEMPLE_LIVRES.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.NOMBRE_EXEMPLE_LIVRES_EditingControlShowing);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(420, 16);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(22, 22);
+            this.button2.TabIndex = 34;
+            this.button2.Text = "X";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(224, 16);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(190, 20);
+            this.textBox1.TabIndex = 33;
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label67.Location = new System.Drawing.Point(10, 19);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(208, 13);
+            this.label67.TabIndex = 32;
+            this.label67.Text = "Saisir le titre ou la partie d\'un titre :";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.DATAGRID_LIVRES_DISPONIBLES);
+            this.groupBox2.Location = new System.Drawing.Point(6, 51);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(892, 170);
+            this.groupBox2.TabIndex = 31;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Liste des livres disponibles ";
+            // 
+            // DATAGRID_LIVRES_DISPONIBLES
+            // 
+            this.DATAGRID_LIVRES_DISPONIBLES.AllowUserToAddRows = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.AllowUserToDeleteRows = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.AllowUserToResizeColumns = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.AllowUserToResizeRows = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DATAGRID_LIVRES_DISPONIBLES.Location = new System.Drawing.Point(9, 19);
+            this.DATAGRID_LIVRES_DISPONIBLES.MultiSelect = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.Name = "DATAGRID_LIVRES_DISPONIBLES";
+            this.DATAGRID_LIVRES_DISPONIBLES.ReadOnly = true;
+            this.DATAGRID_LIVRES_DISPONIBLES.RowHeadersVisible = false;
+            this.DATAGRID_LIVRES_DISPONIBLES.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DATAGRID_LIVRES_DISPONIBLES.Size = new System.Drawing.Size(750, 136);
+            this.DATAGRID_LIVRES_DISPONIBLES.TabIndex = 21;
+            this.DATAGRID_LIVRES_DISPONIBLES.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DATAGRID_LIVRES_DISPONIBLES_CellClick);
+            // 
             // FrmMediatek
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2242,6 +2353,12 @@ namespace MediaTekDocuments.view
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_COMMANDES_DOCUMENTS)).EndInit();
+            this.LIVRE_DISPONIBLE.ResumeLayout(false);
+            this.LIVRE_DISPONIBLE.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.NOMBRE_EXEMPLE_LIVRES)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DATAGRID_LIVRES_DISPONIBLES)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
 
@@ -2433,6 +2550,14 @@ namespace MediaTekDocuments.view
         private System.Windows.Forms.Label label68;
         private System.Windows.Forms.Label label69;
         private System.Windows.Forms.Button BT_ADD_NEW_COMMANDE;
+        private System.Windows.Forms.TabPage LIVRE_DISPONIBLE;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.DataGridView DATAGRID_LIVRES_DISPONIBLES;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.DataGridView NOMBRE_EXEMPLE_LIVRES;
     }
 }
 

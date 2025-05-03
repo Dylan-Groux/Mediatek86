@@ -61,10 +61,10 @@
     <Reference Include="ZstdNet, Version=1.4.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddCommandeWindows.cs">
+    <Compile Include="view\AddCommandeWindows.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddCommandeWindows.Designer.cs">
+    <Compile Include="view\AddCommandeWindows.Designer.cs">
       <DependentUpon>AddCommandeWindows.cs</DependentUpon>
     </Compile>
     <Compile Include="controller\CommandeSuiviDTO.cs" />
@@ -73,6 +73,7 @@
     <Compile Include="model\Commande.cs" />
     <Compile Include="model\CommandesDocuments.cs" />
     <Compile Include="model\CommandeSuivi.cs" />
+    <Compile Include="model\DocumentUnitaire.cs" />
     <Compile Include="model\Suivi.cs" />
     <Compile Include="Scripts\Groupes.cs" />
     <Compile Include="manager\ApiRest.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="model\Revue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="AddCommandeWindows.resx">
+    <EmbeddedResource Include="view\AddCommandeWindows.resx">
       <DependentUpon>AddCommandeWindows.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

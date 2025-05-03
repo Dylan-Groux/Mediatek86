@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Text;
 using System.Net;
+using System.Xml.Linq;
 
 namespace MediaTekDocuments.dal
 {
@@ -433,12 +434,12 @@ namespace MediaTekDocuments.dal
             return false;
         }
 
-            #region Test de la table
-            // Pour le test de la table 
-            public List<CommandesDocuments> GetAllCommandesDocuments()
-            {
-                return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
-            }
+        #region Test de la table
+        // Pour le test de la table 
+        public List<CommandesDocuments> GetAllCommandesDocuments()
+        {
+            return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
+        }
         #endregion
 
         #endregion
@@ -501,5 +502,100 @@ namespace MediaTekDocuments.dal
 
             return false;
         }
+
+        #region DocumentUnitaire
+
+        private List<DocumentUnitaire> documentunitaire;
+        /// <summary>
+        /// Retourne toutes les DocumentUnitaires à partir de la BDD
+        /// </summary>
+        /// <returns>Liste d'objets DocumentUnitaires</returns>
+        public List<DocumentUnitaire> GetAllDocumentUnitaires()
+        {
+            List<DocumentUnitaire> documentunitaire = TraitementRecup<DocumentUnitaire>(GET, "documentunitaire", null);
+            return documentunitaire;
+        }
+
+        /// <summary>
+        /// Insertion d'une DocumentUnitaire en base de données
+        /// </summary>
+        /// <param name="DocumentUnitaire">DocumentUnitaire à insérer</param>
+        /// <returns>true si l'insertion réussit</returns>
+        public bool CreerDocumentUnitaire(DocumentUnitaire documentunitaire)
+        {
+            string jsonDocumentUnitaire = JsonConvert.SerializeObject(documentunitaire, new CustomDateTimeConverter());
+            MessageBox.Show("JSON DocumentUnitaire envoyée : " + jsonDocumentUnitaire);
+            try
+            {
+                List<DocumentUnitaire> liste = TraitementRecup<DocumentUnitaire>(POST, "documentunitaire", "champs=" + jsonDocumentUnitaire);
+                return (liste != null);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erreur lors de l'insertion de la DocumentUnitaire : " + ex.Message);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Met à jour l'état d'un document unitaire dans la base de données via l'API
+        /// </summary>
+        /// <param name="Id">ID du document unitaire</param>
+        /// <param name="nouveauStatut">Le nouvel état à appliquer</param>
+        /// <returns>Retourne true si la mise à jour a réussi, false sinon</returns>
+        public bool UpdateEtatDocumentUnitaire(string Id, int nouveauStatut)
+        {
+            // Prépare les données à envoyer
+            var data = new Dictionary<string, string>
+            {
+                { "champs", JsonConvert.SerializeObject(new
+                    {
+                        id = Id,
+                        etat = nouveauStatut,
+                    })
+                }
+            };
+
+            try
+            {
+                // Crée le client HTTP
+                using (var client = new HttpClient())
+                {
+                    var content = new FormUrlEncodedContent(data);
+
+                    // Appel à l'API avec PUT
+                    var response = client.PutAsync($"http://localhost/rest_mediatekdocuments/documentunitaire/{Id}", content).Result;
+
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la mise à jour de l'état du document unitaire : " + ex.Message);
+                return false;
+            }
+        }
+
+        public bool SupprimerDocumentUnitaire(DocumentUnitaire documentUnitaire)
+        {
+            string jsonDocUnitaireDelete = JsonConvert.SerializeObject(new { id = documentUnitaire.Id });
+
+            // Affichage du JSON préparé
+            MessageBox.Show("Tentative de suppression du Commande.\nDonnées envoyées :\n" + jsonDocUnitaireDelete, "DEBUG - JSON Commande");
+
+            try
+            {
+                return TraitementDelete("documentunitaire", jsonDocUnitaireDelete);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la suppression du Commande : " + ex.Message, "DEBUG - Exception");
+                //MessageBox.Show("Données envoyées : " + jsonCommandeDelete, "DEBUG - JSON Envoyé");
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }
