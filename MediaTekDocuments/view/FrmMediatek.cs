@@ -37,6 +37,7 @@ namespace MediaTekDocuments.view
         {
             InitializeComponent();
             this.controller = new FrmMediatekController();
+            MettreAJourInfosUtilisateur();
         }
 
         /// <summary>
@@ -378,321 +379,6 @@ namespace MediaTekDocuments.view
                     break;
             }
             RemplirLivresListe(sortedList);
-        }
-        #endregion
-
-        #region Onglet Dvd
-        private readonly BindingSource bdgDvdListe = new BindingSource();
-        private List<Dvd> lesDvd = new List<Dvd>();
-
-        /// <summary>
-        /// Ouverture de l'onglet Dvds : 
-        /// appel des méthodes pour remplir le datagrid des dvd et des combos (genre, rayon, public)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tabDvd_Enter(object sender, EventArgs e)
-        {
-            lesDvd = controller.GetAllDvd();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxDvdGenres);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxDvdPublics);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxDvdRayons);
-            RemplirDvdListeComplete();
-        }
-
-        /// <summary>
-        /// Remplit le dategrid avec la liste reçue en paramètre
-        /// </summary>
-        /// <param name="Dvds">liste de dvd</param>
-        private void RemplirDvdListe(List<Dvd> Dvds)
-        {
-            bdgDvdListe.DataSource = Dvds;
-            dgvDvdListe.DataSource = bdgDvdListe;
-            dgvDvdListe.Columns["idRayon"].Visible = false;
-            dgvDvdListe.Columns["idGenre"].Visible = false;
-            dgvDvdListe.Columns["idPublic"].Visible = false;
-            dgvDvdListe.Columns["image"].Visible = false;
-            dgvDvdListe.Columns["synopsis"].Visible = false;
-            dgvDvdListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dgvDvdListe.Columns["id"].DisplayIndex = 0;
-            dgvDvdListe.Columns["titre"].DisplayIndex = 1;
-        }
-
-        /// <summary>
-        /// Recherche et affichage du Dvd dont on a saisi le numéro.
-        /// Si non trouvé, affichage d'un MessageBox.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnDvdNumRecherche_Click(object sender, EventArgs e)
-        {
-            if (!txbDvdNumRecherche.Text.Equals(""))
-            {
-                txbDvdTitreRecherche.Text = "";
-                cbxDvdGenres.SelectedIndex = -1;
-                cbxDvdRayons.SelectedIndex = -1;
-                cbxDvdPublics.SelectedIndex = -1;
-                Dvd dvd = lesDvd.Find(x => x.Id.Equals(txbDvdNumRecherche.Text));
-                if (dvd != null)
-                {
-                    List<Dvd> Dvd = new List<Dvd>() { dvd };
-                    RemplirDvdListe(Dvd);
-                }
-                else
-                {
-                    MessageBox.Show("numéro introuvable");
-                    RemplirDvdListeComplete();
-                }
-            }
-            else
-            {
-                RemplirDvdListeComplete();
-            }
-        }
-
-        /// <summary>
-        /// Recherche et affichage des Dvd dont le titre matche acec la saisie.
-        /// Cette procédure est exécutée à chaque ajout ou suppression de caractère
-        /// dans le textBox de saisie.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void txbDvdTitreRecherche_TextChanged(object sender, EventArgs e)
-        {
-            if (!txbDvdTitreRecherche.Text.Equals(""))
-            {
-                cbxDvdGenres.SelectedIndex = -1;
-                cbxDvdRayons.SelectedIndex = -1;
-                cbxDvdPublics.SelectedIndex = -1;
-                txbDvdNumRecherche.Text = "";
-                List<Dvd> lesDvdParTitre;
-                lesDvdParTitre = lesDvd.FindAll(x => x.Titre.ToLower().Contains(txbDvdTitreRecherche.Text.ToLower()));
-                RemplirDvdListe(lesDvdParTitre);
-            }
-            else
-            {
-                // si la zone de saisie est vide et aucun élément combo sélectionné, réaffichage de la liste complète
-                if (cbxDvdGenres.SelectedIndex < 0 && cbxDvdPublics.SelectedIndex < 0 && cbxDvdRayons.SelectedIndex < 0
-                    && txbDvdNumRecherche.Text.Equals(""))
-                {
-                    RemplirDvdListeComplete();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Affichage des informations du dvd sélectionné
-        /// </summary>
-        /// <param name="dvd">le dvd</param>
-        private void AfficheDvdInfos(Dvd dvd)
-        {
-            txbDvdRealisateur.Text = dvd.Realisateur;
-            txbDvdSynopsis.Text = dvd.Synopsis;
-            txbDvdImage.Text = dvd.Image;
-            txbDvdDuree.Text = dvd.Duree.ToString();
-            txbDvdNumero.Text = dvd.Id;
-            txbDvdGenre.Text = dvd.Genre;
-            txbDvdPublic.Text = dvd.Public;
-            txbDvdRayon.Text = dvd.Rayon;
-            txbDvdTitre.Text = dvd.Titre;
-            string image = dvd.Image;
-            try
-            {
-                pcbDvdImage.Image = Image.FromFile(image);
-            }
-            catch
-            {
-                pcbDvdImage.Image = null;
-            }
-        }
-
-        /// <summary>
-        /// Vide les zones d'affichage des informations du dvd
-        /// </summary>
-        private void VideDvdInfos()
-        {
-            txbDvdRealisateur.Text = "";
-            txbDvdSynopsis.Text = "";
-            txbDvdImage.Text = "";
-            txbDvdDuree.Text = "";
-            txbDvdNumero.Text = "";
-            txbDvdGenre.Text = "";
-            txbDvdPublic.Text = "";
-            txbDvdRayon.Text = "";
-            txbDvdTitre.Text = "";
-            pcbDvdImage.Image = null;
-        }
-
-        /// <summary>
-        /// Filtre sur le genre
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cbxDvdGenres_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbxDvdGenres.SelectedIndex >= 0)
-            {
-                txbDvdTitreRecherche.Text = "";
-                txbDvdNumRecherche.Text = "";
-                Genre genre = (Genre)cbxDvdGenres.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Genre.Equals(genre.Libelle));
-                RemplirDvdListe(Dvd);
-                cbxDvdRayons.SelectedIndex = -1;
-                cbxDvdPublics.SelectedIndex = -1;
-            }
-        }
-
-        /// <summary>
-        /// Filtre sur la catégorie de public
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cbxDvdPublics_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbxDvdPublics.SelectedIndex >= 0)
-            {
-                txbDvdTitreRecherche.Text = "";
-                txbDvdNumRecherche.Text = "";
-                Public lePublic = (Public)cbxDvdPublics.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Public.Equals(lePublic.Libelle));
-                RemplirDvdListe(Dvd);
-                cbxDvdRayons.SelectedIndex = -1;
-                cbxDvdGenres.SelectedIndex = -1;
-            }
-        }
-
-        /// <summary>
-        /// Filtre sur le rayon
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void cbxDvdRayons_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbxDvdRayons.SelectedIndex >= 0)
-            {
-                txbDvdTitreRecherche.Text = "";
-                txbDvdNumRecherche.Text = "";
-                Rayon rayon = (Rayon)cbxDvdRayons.SelectedItem;
-                List<Dvd> Dvd = lesDvd.FindAll(x => x.Rayon.Equals(rayon.Libelle));
-                RemplirDvdListe(Dvd);
-                cbxDvdGenres.SelectedIndex = -1;
-                cbxDvdPublics.SelectedIndex = -1;
-            }
-        }
-
-        /// <summary>
-        /// Sur la sélection d'une ligne ou cellule dans le grid
-        /// affichage des informations du dvd
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvDvdListe_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvDvdListe.CurrentCell != null)
-            {
-                try
-                {
-                    Dvd dvd = (Dvd)bdgDvdListe.List[bdgDvdListe.Position];
-                    AfficheDvdInfos(dvd);
-                }
-                catch
-                {
-                    VideDvdZones();
-                }
-            }
-            else
-            {
-                VideDvdInfos();
-            }
-        }
-
-        /// <summary>
-        /// Sur le clic du bouton d'annulation, affichage de la liste complète des Dvd
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnDvdAnnulPublics_Click(object sender, EventArgs e)
-        {
-            RemplirDvdListeComplete();
-        }
-
-        /// <summary>
-        /// Sur le clic du bouton d'annulation, affichage de la liste complète des Dvd
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnDvdAnnulRayons_Click(object sender, EventArgs e)
-        {
-            RemplirDvdListeComplete();
-        }
-
-        /// <summary>
-        /// Sur le clic du bouton d'annulation, affichage de la liste complète des Dvd
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnDvdAnnulGenres_Click(object sender, EventArgs e)
-        {
-            RemplirDvdListeComplete();
-        }
-
-        /// <summary>
-        /// Affichage de la liste complète des Dvd
-        /// et annulation de toutes les recherches et filtres
-        /// </summary>
-        private void RemplirDvdListeComplete()
-        {
-            RemplirDvdListe(lesDvd);
-            VideDvdZones();
-        }
-
-        /// <summary>
-        /// vide les zones de recherche et de filtre
-        /// </summary>
-        private void VideDvdZones()
-        {
-            cbxDvdGenres.SelectedIndex = -1;
-            cbxDvdRayons.SelectedIndex = -1;
-            cbxDvdPublics.SelectedIndex = -1;
-            txbDvdNumRecherche.Text = "";
-            txbDvdTitreRecherche.Text = "";
-        }
-
-        /// <summary>
-        /// Tri sur les colonnes
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvDvdListe_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            VideDvdZones();
-            string titreColonne = dgvDvdListe.Columns[e.ColumnIndex].HeaderText;
-            List<Dvd> sortedList = new List<Dvd>();
-            switch (titreColonne)
-            {
-                case "Id":
-                    sortedList = lesDvd.OrderBy(o => o.Id).ToList();
-                    break;
-                case "Titre":
-                    sortedList = lesDvd.OrderBy(o => o.Titre).ToList();
-                    break;
-                case "Duree":
-                    sortedList = lesDvd.OrderBy(o => o.Duree).ToList();
-                    break;
-                case "Realisateur":
-                    sortedList = lesDvd.OrderBy(o => o.Realisateur).ToList();
-                    break;
-                case "Genre":
-                    sortedList = lesDvd.OrderBy(o => o.Genre).ToList();
-                    break;
-                case "Public":
-                    sortedList = lesDvd.OrderBy(o => o.Public).ToList();
-                    break;
-                case "Rayon":
-                    sortedList = lesDvd.OrderBy(o => o.Rayon).ToList();
-                    break;
-            }
-            RemplirDvdListe(sortedList);
         }
         #endregion
 
@@ -1359,6 +1045,21 @@ namespace MediaTekDocuments.view
             // ⛓️ Ajout manuel des colonnes
             DATAGRID_COMMANDES.Columns.AddRange(colId, colDateCmd, colMontant, colDateSuivi, colLibelle, comboCol, btnCol);
 
+
+            if (Session.CurrentUser != null)
+            {
+                if (Session.CurrentUser.Role == "ADMIN")
+                {
+                    // Afficher la colonne de suppression
+                    DATAGRID_COMMANDES.Columns["ColonneSuppression"].Visible = true;
+                }
+                else
+                {
+                    // Masquer la colonne de suppression pour les autres
+                    DATAGRID_COMMANDES.Columns["ColonneSuppression"].Visible = false;
+                }
+            }
+
             // 🧷 Paramètres globaux
             DATAGRID_COMMANDES.AutoGenerateColumns = false;
             DATAGRID_COMMANDES.SelectionMode = DataGridViewSelectionMode.CellSelect;
@@ -1561,16 +1262,28 @@ namespace MediaTekDocuments.view
                     {
                         int statutActuel = row.StatutSuivi;
 
-                        // Liste dynamique des statuts autorisés (>= statut actuel)
-                        var statutsAutorises = new List<Statut>
+                        // Liste des statuts possible pour l'état d'un livre
+                        var statutsDisponibles = new List<Statut>
                         {
                             new Statut { Value = 1, Libelle = "En cours" },
                             new Statut { Value = 2, Libelle = "Livré" },
                             new Statut { Value = 3, Libelle = "Disponible en points relais" },
                             new Statut { Value = 4, Libelle = "Annulé" }
+                        };
+
+                        // Nouvelle Liste en doublons pour gérer la partie admin
+                        List<Statut> statutsAutorises;
+                        
+                        if  (Session.CurrentUser.Role == "ADMIN")
+                        {
+                            statutsAutorises = statutsDisponibles; 
                         }
-                        .Where(s => s.Value >= statutActuel)
-                        .ToList();
+                        else
+                        {
+                            statutsAutorises = statutsDisponibles
+                                 .Where(s => s.Value >= statutActuel)
+                                 .ToList();
+                        };
 
                         // Retarder la mise à jour du DataSource pour éviter les conflits
                         await Task.Delay(100);
@@ -1926,9 +1639,11 @@ namespace MediaTekDocuments.view
                         MessageBox.Show("Commande, suivi, liaison et documents unitaires créés avec succès !");
                     }
                     else
+                    {
                         MessageBox.Show("Commande créée mais erreur sur le suivi ou la liaison.");
-
+                    }
                     LoadCommandes();  // Actualise la liste des commandes
+                    LoadExemplaire();
                 }
                 else
                 {
@@ -1966,6 +1681,7 @@ namespace MediaTekDocuments.view
             if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
             {
                 var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
+
                 if (row != null && row.StatutSuivi >= 3)
                 {
                     string idSuivi = row.SuiviId;
@@ -1973,44 +1689,45 @@ namespace MediaTekDocuments.view
                     string commandedocumentId = row.LiaisonCommandeDocument?.id_commandedocument;
 
                     bool successS = controller.SupprimerSuivi(idSuivi);
-                    if (successS)
-                    {
-                        MessageBox.Show("Suivi supprimé avec succès !");
-                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
-                    }
-                    else
-                    {
-                        MessageBox.Show("Erreur lors de la suppression du suivi !");
-                    }
-
                     bool successCD = controller.SupprimerCommandeDocument(commandedocumentId);
-                    if (successCD)
-                    {
-                        MessageBox.Show("Commande supprimé avec succès !");
-                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
-                    }
-                    else
-                    {
-                        MessageBox.Show("Erreur lors de la suppression d'une commande' !");
-                    }
-
                     bool successC = controller.SupprimerCommande(idCommande);
-                    if (successC)
+                    if (successC && successS && successCD)
                     {
-                        MessageBox.Show("Commande supprimé avec succès !");
-                        LoadCommandes(); // Recharge la DGV si tu veux la MAJ directe
+                        MessageBox.Show("Commande supprimé avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadCommandes();
                     }
                     else
                     {
-                        MessageBox.Show("Erreur lors de la suppression d'une commande' !");
+                        MessageBox.Show("Suppression échoué.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
-            }
-            if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex > 0)
-            {
-                var row = DATAGRID_COMMANDES.Rows[e.RowIndex].DataBoundItem as CommandeSuiviDTO;
-                if (row != null && row.StatutSuivi <= 2)
-                    MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                if (Session.CurrentUser.Role == "ADMIN" && row != null)
+                {
+                    string idSuivi = row.SuiviId;
+                    string idCommande = row.CommandeId;
+                    string commandedocumentId = row.LiaisonCommandeDocument?.id_commandedocument;
+
+                    bool successS = controller.SupprimerSuivi(idSuivi);
+                    bool successCD = controller.SupprimerCommandeDocument(commandedocumentId);
+                    bool successC = controller.SupprimerCommande(idCommande);
+
+                    if (successC && successS && successCD)
+                    {
+                        MessageBox.Show("Commande supprimé avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadCommandes();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Suppression échoué.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+
+                if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex > 0)
+                {
+                    if (row != null && row.StatutSuivi <= 2 && Session.CurrentUser.Role != "ADMIN")
+                        MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -2230,7 +1947,22 @@ namespace MediaTekDocuments.view
 
             Debug.WriteLine("✅ DataSource affectée avec succès.");
                 Debug.WriteLine("▶ Fin de ConfigurerColonnesDgvExemplaires");
-            }
+            // Vérifie le rôle de l'utilisateur connecté
+
+                if (Session.CurrentUser != null)
+                {
+                    if (Session.CurrentUser.Role == "ADMIN")
+                    {
+                        // Afficher la colonne de suppression
+                        NOMBRE_EXEMPLE_LIVRES.Columns["ColonneSuppression"].Visible = true;
+                    }
+                    else
+                    {
+                        // Masquer la colonne de suppression pour les autres
+                        NOMBRE_EXEMPLE_LIVRES.Columns["ColonneSuppression"].Visible = false;
+                    }
+                }
+        }
 
         private async void NOMBRE_EXEMPLE_LIVRES_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
@@ -2246,16 +1978,27 @@ namespace MediaTekDocuments.view
                         int statutActuel = row.Etat;
 
                         // Liste dynamique des statuts autorisés (>= statut actuel)
-                        var statutsAutorises = new List<Statut>
-                        { 
+                        var statutsDisponibles = new List<Statut>
+                        {
                             new Statut { Value = 1, Libelle = "Neuf" },
                             new Statut { Value = 2, Libelle = "Très bon" },
                             new Statut { Value = 3, Libelle = "Moyen" },
                             new Statut { Value = 4, Libelle = "Endommagé" },
                             new Statut { Value = 5, Libelle = "Illisible" }
+                        };
+
+                        List<Statut> statutsAutorises;
+
+                        if (Session.CurrentUser.Role == "ADMIN")
+                        {
+                            statutsAutorises = statutsDisponibles;
                         }
-                        .Where(s => s.Value >= statutActuel)
-                        .ToList();
+                        else
+                        {
+                            statutsAutorises = statutsDisponibles
+                                .Where(s => s.Value >= statutActuel)
+                                .ToList();
+                        }
 
                         // Retarder la mise à jour du DataSource pour éviter les conflits
                         await Task.Delay(100);
@@ -2328,7 +2071,8 @@ namespace MediaTekDocuments.view
             if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
             {
                 var row = NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].DataBoundItem as DocumentUnitaire;
-                if (row != null && row.Etat >= 4)
+
+                if (Session.CurrentUser.Role == "ADMIN" && row != null)
                 {
                     string Id = row.Id;
 
@@ -2343,15 +2087,59 @@ namespace MediaTekDocuments.view
                     {
                         MessageBox.Show("Erreur lors de la suppression du Livre !");
                     }
+                }
+                else
+                {
 
+                    if (row != null && row.Etat >= 4)
+                    {
+                        string Id = row.Id;
+
+
+                        bool success = controller.SupprimerDocumentUnitaire(Id);
+                        if (success)
+                        {
+                            MessageBox.Show("Livre supprimé avec succès !");
+                            LoadDocumentUnitaire(); // Recharge la DGV si tu veux la MAJ directe
+                        }
+                        else
+                        {
+                            MessageBox.Show("Erreur lors de la suppression du Livre !");
+                        }
+
+                    }
+
+                    if (row != null && row.Etat <= 3)
+                        MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-            if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex > 0)
+        }
+
+        private void MettreAJourInfosUtilisateur()
+        {
+            if (Session.CurrentUser != null)
             {
-                var row = NOMBRE_EXEMPLE_LIVRES.Rows[e.RowIndex].DataBoundItem as DocumentUnitaire;
-                if (row != null && row.Etat <= 3)
-                    MessageBox.Show("Suppression impossible.", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                lblInfosUtilisateurs.Text = $"Connecté : {Session.CurrentUser.Username} ({Session.CurrentUser.Role})";
             }
+        }
+
+        private void TAB_COMMANDE_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MettreAJourInfosUtilisateur();
+        }
+
+        /// <summary>
+        /// Permet de recharger complètement la liste des exemplaires
+        /// </summary>
+        private void LoadExemplaire()
+        {
+            List<DocumentUnitaire> exemplaires = controller.GetAllDocumentUnitaires();
+            ConfigurerColonnesDgvExemplaires(exemplaires);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            LoadExemplaire();
         }
     }
 }

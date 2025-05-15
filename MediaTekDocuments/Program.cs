@@ -22,7 +22,19 @@ namespace MediaTekDocuments
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new FrmMediatek());
+
+                // Afficher la fenêtre de login
+                LoginForm loginForm = new LoginForm();
+                if (loginForm.ShowDialog() == DialogResult.OK)
+                {
+                    // Si login réussi → ouvrir le form principal
+                    Application.Run(new FrmMediatek());
+                }
+                else
+                {
+                    // Sinon quitter proprement
+                    Application.Exit();
+                }
             }
             catch (Exception ex)
             {
@@ -30,4 +42,5 @@ namespace MediaTekDocuments
             }
         }
     }
+
 }

@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Text;
 using System.Net;
 using System.Xml.Linq;
+using MediaTekDocuments.controller;
 
 namespace MediaTekDocuments.dal
 {
@@ -224,20 +225,20 @@ namespace MediaTekDocuments.dal
                 string postData = "champs=" + WebUtility.UrlEncode(jsonChamps);
 
                 // Log de debug : ce qui est envoyé
-                MessageBox.Show("Tentative suppression\nTable : " + table + "\nData : " + postData, "DEBUG - DELETE");
+                //MessageBox.Show("Tentative suppression\nTable : " + table + "\nData : " + postData, "DEBUG - DELETE");
 
                 JObject retour = api.RecupDistant(DELETE, table, postData);
 
                 string code = (string)retour["code"];
                 string retourMessage = (string)retour["message"];
 
-                MessageBox.Show("Code retour : " + code + "\nMessage : " + retourMessage, "DEBUG - Résultat API");
+               // MessageBox.Show("Code retour : " + code + "\nMessage : " + retourMessage, "DEBUG - Résultat API");
 
                 return code == "200";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception DELETE : " + ex.Message, "DEBUG - Exception");
+                //MessageBox.Show("Exception DELETE : " + ex.Message, "DEBUG - Exception");
                 return false;
             }
         }
@@ -581,7 +582,7 @@ namespace MediaTekDocuments.dal
             string jsonDocUnitaireDelete = JsonConvert.SerializeObject(new { id = documentUnitaire.Id });
 
             // Affichage du JSON préparé
-            MessageBox.Show("Tentative de suppression du Commande.\nDonnées envoyées :\n" + jsonDocUnitaireDelete, "DEBUG - JSON Commande");
+            //MessageBox.Show("Tentative de suppression du Commande.\nDonnées envoyées :\n" + jsonDocUnitaireDelete, "DEBUG - JSON Commande");
 
             try
             {
@@ -596,6 +597,42 @@ namespace MediaTekDocuments.dal
             return false;
         }
 
+        #endregion
+        #region Login 
+        public User LoginUtilisateur(string username, string password)
+        {
+            try
+            {
+                // Récupération de tous les utilisateurs via GET
+                List<User> users = TraitementRecup<User>("GET", "user", null);
+
+                if (users != null && users.Count > 0)
+                {
+                    // Parcours de la liste pour vérifier si un utilisateur correspond
+                    foreach (var user in users)
+                    {
+                        if (user.Username == username && user.Password == password)
+                        {
+                            if (string.IsNullOrEmpty(user.Role))
+                                user.Role = "salarie";
+
+                            Session.CurrentUser = user;
+                            MessageBox.Show("Connexion réussie !");
+                            return user;
+                        }
+                    }
+                }
+
+                // Si aucun utilisateur trouvé
+                MessageBox.Show("Identifiants incorrects.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur lors de la connexion : " + ex.Message);
+            }
+
+            return null;
+        }
         #endregion
     }
 }

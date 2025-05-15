@@ -6,6 +6,7 @@ using System;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.ComponentModel.Design;
+using MediaTekDocuments.view;
 
 namespace MediaTekDocuments.controller
 {
@@ -428,21 +429,21 @@ namespace MediaTekDocuments.controller
 
         public bool SupprimerCommande(string commandeId)
         {
-            MessageBox.Show(commandeId);
+            //MessageBox.Show(commandeId);
             var commande = new Commande { Id = commandeId };
             return access.SupprimerCommande(commande);
         }
 
         public bool SupprimerCommandeDocument(string commandedocumentId)
         {
-            MessageBox.Show(commandedocumentId);
+            //MessageBox.Show(commandedocumentId);
             var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId  };
             return access.SupprimerCommandeDocument(commandedocument);
         }
 
         public bool SupprimerNbExemplaire(string commandedocumentId)
         {
-            MessageBox.Show(commandedocumentId);
+            //MessageBox.Show(commandedocumentId);
             var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId };
             return access.SupprimerCommandeDocument(commandedocument);
         }
@@ -450,7 +451,7 @@ namespace MediaTekDocuments.controller
 
         public bool SupprimerSuivi(string idSuivi)
         {
-            MessageBox.Show(idSuivi);
+            //MessageBox.Show(idSuivi);
             var suivi = new Suivi { id_suivi = idSuivi };
             return access.SupprimerSuivi(suivi);
         }
@@ -482,11 +483,11 @@ namespace MediaTekDocuments.controller
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefault()?.Id;
 
-            MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
+            //MessageBox.Show("Dernier ID trouvé : " + lastCommandeDocumentId);
 
             if (allDocumentUnitaire == null || allDocumentUnitaire.Count == 0)
             {
-                MessageBox.Show("Aucune CommandeDocument trouvée dans GenerateCommandeDocumentId()");
+                //MessageBox.Show("Aucune CommandeDocument trouvée dans GenerateCommandeDocumentId()");
             }
             else
             {
@@ -520,7 +521,7 @@ namespace MediaTekDocuments.controller
 
             // Formater l'ID avec le préfixe et un padding de 3 chiffres (par exemple, "C001" si le préfixe est "C")
             string newCommandeDocumentId = prefix + newNumber.ToString("D5"); // Utilise "D5" pour s'assurer que le nombre a toujours 3 chiffres
-            MessageBox.Show(newCommandeDocumentId);
+            //MessageBox.Show(newCommandeDocumentId);
             return newCommandeDocumentId;
         }
 
@@ -558,9 +559,16 @@ namespace MediaTekDocuments.controller
 
         public bool SupprimerDocumentUnitaire(string Id)
         {
-            MessageBox.Show(Id);
+            //MessageBox.Show(Id);
             var documentUnitaire = new DocumentUnitaire { Id = Id };
             return access.SupprimerDocumentUnitaire(documentUnitaire);
+        }
+        #endregion
+        #region Login
+
+        public User LoginUtilisateur(string username, string password)
+        {
+            return access.LoginUtilisateur(username, password);
         }
         #endregion
     }
