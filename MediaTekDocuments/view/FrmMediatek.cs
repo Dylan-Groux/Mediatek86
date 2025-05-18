@@ -77,12 +77,12 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TabLivres_Enter(object sender, EventArgs e)
+        private async void TabLivres_Enter(object sender, EventArgs e)
         {
-            lesLivres = controller.GetAllLivres();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
+            lesLivres = await controller.GetAllLivres();
+            RemplirComboCategorie(await controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
+            RemplirComboCategorie(await controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
+            RemplirComboCategorie(await controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
         }
 
@@ -392,12 +392,12 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tabRevues_Enter(object sender, EventArgs e)
+        private async void tabRevues_Enter(object sender, EventArgs e)
         {
-            lesRevues = controller.GetAllRevues();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxRevuesGenres);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxRevuesPublics);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxRevuesRayons);
+            lesRevues = await controller.GetAllRevues();
+            RemplirComboCategorie(await controller.GetAllGenres(), bdgGenres, cbxRevuesGenres);
+            RemplirComboCategorie(await controller.GetAllPublics(), bdgPublics, cbxRevuesPublics);
+            RemplirComboCategorie(await controller.GetAllRayons(), bdgRayons, cbxRevuesRayons);
             RemplirRevuesListeComplete();
         }
 
@@ -704,9 +704,9 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tabReceptionRevue_Enter(object sender, EventArgs e)
+        private async void tabReceptionRevue_Enter(object sender, EventArgs e)
         {
-            lesRevues = controller.GetAllRevues();
+            lesRevues = await controller.GetAllRevues();
             txbReceptionRevueNumero.Text = "";
         }
 
@@ -804,10 +804,10 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Récupère et affiche les exemplaires d'une revue
         /// </summary>
-        private void AfficheReceptionExemplairesRevue()
+        private async Task AfficheReceptionExemplairesRevue()
         {
             string idDocuement = txbReceptionRevueNumero.Text;
-            lesExemplaires = controller.GetExemplairesRevue(idDocuement);
+            lesExemplaires = await controller.GetExemplairesRevue(idDocuement);
             RemplirReceptionExemplairesListe(lesExemplaires);
             AccesReceptionExemplaireGroupBox(true);
         }
@@ -860,7 +860,7 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnReceptionExemplaireValider_Click(object sender, EventArgs e)
+        private async void btnReceptionExemplaireValider_Click(object sender, EventArgs e)
         {
             if (!txbReceptionExemplaireNumero.Text.Equals(""))
             {
@@ -872,7 +872,7 @@ namespace MediaTekDocuments.view
                     string idEtat = ETATNEUF;
                     string idDocument = txbReceptionRevueNumero.Text;
                     Exemplaire exemplaire = new Exemplaire(numero, dateAchat, photo, idEtat, idDocument);
-                    if (controller.CreerExemplaire(exemplaire))
+                    if (await controller.CreerExemplaire(exemplaire))
                     {
                         AfficheReceptionExemplairesRevue();
                     }
@@ -963,20 +963,20 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TAB_COMMANDE_Enter(object sender, EventArgs e)
+        private async Task TAB_COMMANDE_Enter(object sender, EventArgs e)
         {
-            lesCommandes = controller.GetAllCommandes();
-            lesSuivi = controller.GetAllSuivi();
-            lesCommandesDocuments = controller.GetAllCommnadesDocuments();
+            lesCommandes = await controller.GetAllCommandes();
+            lesSuivi = await controller.GetAllSuivi();
+            lesCommandesDocuments = await controller.GetAllCommnadesDocuments();
 
-            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+            commandeSuivisBase = await controller.GetCommandesSuivisDTO();
             commandeSuivis = new List<CommandeSuiviDTO>(commandeSuivisBase);
             RemplirCommandesListeComplete();
 
-            lesLivres = controller.GetAllLivres();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
+            lesLivres = await controller.GetAllLivres();
+            RemplirComboCategorie( await controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
+            RemplirComboCategorie(await controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
+            RemplirComboCategorie(await controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
 
         }
 
@@ -1181,18 +1181,18 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Permet de recharger complètement la liste des commandes
         /// </summary>
-        private void LoadCommandes()
+        private async Task LoadCommandes()
         {
-            List<CommandeSuiviDTO> commandes = controller.GetCommandesSuivisDTO();
+            List<CommandeSuiviDTO> commandes = await controller.GetCommandesSuivisDTO();
             RemplirCommandeAvecSuivi(commandes);
         }
 
         /// <summary>
         /// Permet de forcer le rechargement de la Liste CommandesDTO dans sa liste de base
         /// </summary>
-        private void ReloadCommandesDTOListBase()
+        private async Task ReloadCommandesDTOListBase()
         {
-            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+            commandeSuivisBase = await controller.GetCommandesSuivisDTO();
         }
 
         /// <summary>
@@ -1320,7 +1320,7 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DATAGRID_COMMANDES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private async void DATAGRID_COMMANDES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneStatutCombo")
             {
@@ -1342,7 +1342,7 @@ namespace MediaTekDocuments.view
                     };
 
                     // Envoi à l'API via la méthode existante
-                    bool success = controller.ModifierStatutCommande(row.SuiviId, row.CommandeId, nouveauStatut);
+                    bool success = await controller.ModifierStatutCommande(row.SuiviId, row.CommandeId, nouveauStatut);
 
                     if (success)
                     {
@@ -1471,13 +1471,13 @@ namespace MediaTekDocuments.view
         /// Affichage et remplissage de la Dgv 
         /// </summary>
         /// <param name="idDocument"></param>
-        private void AfficheCommandesInfos(string idDocument)
+        private async Task AfficheCommandesInfos(string idDocument)
         {
             currentIdDocument = idDocument;
 
-            List<CommandesDocuments> commandesDocuments = controller.GetAllCommnadesDocuments();
+            List<CommandesDocuments> commandesDocuments = await controller.GetAllCommnadesDocuments();
             // Récupérer toutes les commandes associées à l'id_document
-            commandesDocuments = controller.GetAllCommnadesDocuments();
+            commandesDocuments = await controller.GetAllCommnadesDocuments();
 
             // Filtrer les commandes pour récupérer celles qui correspondent à l'id_document
             var commandesFiltrees = commandesDocuments.Where(c => c.id_document == idDocument).ToList();
@@ -1492,14 +1492,14 @@ namespace MediaTekDocuments.view
             DATAGRID_COMMANDES_DOCUMENTS.Columns["idLivreDvd"].Visible = false;
 
             DATAGRID_COMMANDES_DOCUMENTS.Columns["id_commande"].DisplayIndex = 1;
-            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_documment"].DisplayIndex = 2;
+            DATAGRID_COMMANDES_DOCUMENTS.Columns["id_document"].DisplayIndex = 2;
             DATAGRID_COMMANDES_DOCUMENTS.Columns["nbExemplaire"].DisplayIndex = 3;
         }
 
-        private List<CommandesDocuments> GetCommandesFiltreesEtTriees(string idDocument, string colonne, bool triAscendant)
+        private async Task<List<CommandesDocuments>> GetCommandesFiltreesEtTriees(string idDocument, string colonne, bool triAscendant)
         {
             // Récupérer toutes les commandes
-            var toutesLesCommandes = controller.GetAllCommnadesDocuments();
+            var toutesLesCommandes = await controller.GetAllCommnadesDocuments();
 
             // Filtrer par id_document
             var commandesFiltrees = toutesLesCommandes
@@ -1612,13 +1612,13 @@ namespace MediaTekDocuments.view
         /// </summary>
         /// <param name="sender">L'objet émetteur de l'événement (le bouton cliqué).</param>
         /// <param name="e">Les arguments de l'événement (données liées à l'événement de clic).</param>
-        private void BT_ADD_NEW_COMMANDE_Click(object sender, EventArgs e)
+        private async void BT_ADD_NEW_COMMANDE_Click(object sender, EventArgs e)
         {
             controller.GetAllCommandes();
             // Générez l'ID dans FrmMediatek
-            string idCommande = controller.GenerateCommandeId();
-            string idSuivi = controller.GenerateSuiviId();
-            string idCommandeDocument = controller.GenerateCommandeDocumentId();
+            string idCommande = await controller.GenerateCommandeId();
+            string idSuivi = await controller.GenerateSuiviId();
+            string idCommandeDocument = await controller.GenerateCommandeDocumentId();
 
             var addForm = new AddCommandeWindows(idCommande, idSuivi, idCommandeDocument);  // Passe l'ID généré à la fenêtre AddCommandeWindows
 
@@ -1628,14 +1628,14 @@ namespace MediaTekDocuments.view
                 var suivi = addForm.SuiviCree;
                 var liaison = addForm.LiaisonCreee;
 
-                if (commande != null && controller.CreerCommande(commande))
+                if (commande != null && await controller.CreerCommande(commande))
                 {
-                    bool suiviOK = controller.CreerSuivi(suivi);
-                    bool liaisonOK = controller.CreerCommandeDocument(liaison);
+                    bool suiviOK = await controller.CreerSuivi(suivi);
+                    bool liaisonOK = await controller.CreerCommandeDocument(liaison);
 
                     if (suiviOK && liaisonOK)
                     {
-                        controller.GenererDocumentUnitairesPourCommande(liaison);
+                        await controller.GenererDocumentUnitairesPourCommande(liaison);
                         MessageBox.Show("Commande, suivi, liaison et documents unitaires créés avec succès !");
                     }
                     else
@@ -1676,7 +1676,7 @@ namespace MediaTekDocuments.view
 
         #endregion
 
-        private void DATAGRID_COMMANDES_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void DATAGRID_COMMANDES_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (DATAGRID_COMMANDES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
             {
@@ -1688,9 +1688,9 @@ namespace MediaTekDocuments.view
                     string idCommande = row.CommandeId;
                     string commandedocumentId = row.LiaisonCommandeDocument?.id_commandedocument;
 
-                    bool successS = controller.SupprimerSuivi(idSuivi);
-                    bool successCD = controller.SupprimerCommandeDocument(commandedocumentId);
-                    bool successC = controller.SupprimerCommande(idCommande);
+                    bool successS = await controller.SupprimerSuivi(idSuivi);
+                    bool successCD = await controller.SupprimerCommandeDocument(commandedocumentId);
+                    bool successC = await controller.SupprimerCommande(idCommande);
                     if (successC && successS && successCD)
                     {
                         MessageBox.Show("Commande supprimé avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1708,9 +1708,9 @@ namespace MediaTekDocuments.view
                     string idCommande = row.CommandeId;
                     string commandedocumentId = row.LiaisonCommandeDocument?.id_commandedocument;
 
-                    bool successS = controller.SupprimerSuivi(idSuivi);
-                    bool successCD = controller.SupprimerCommandeDocument(commandedocumentId);
-                    bool successC = controller.SupprimerCommande(idCommande);
+                    bool successS = await controller.SupprimerSuivi(idSuivi);
+                    bool successCD = await controller.SupprimerCommandeDocument(commandedocumentId);
+                    bool successC = await controller.SupprimerCommande(idCommande);
 
                     if (successC && successS && successCD)
                     {
@@ -1736,22 +1736,22 @@ namespace MediaTekDocuments.view
         List<Livre> livresdisponibles = new List<Livre>();
         private List<DocumentUnitaire> documentUnitaires = new List<DocumentUnitaire>();
 
-        private void TAB_COMMANDE_Enter_1(object sender, EventArgs e)
+        private async void TAB_COMMANDE_Enter_1(object sender, EventArgs e)
         {
-            lesCommandes = controller.GetAllCommandes();
-            lesSuivi = controller.GetAllSuivi();
-            lesCommandesDocuments = controller.GetAllCommnadesDocuments();
+            lesCommandes = await controller.GetAllCommandes();
+            lesSuivi = await controller.GetAllSuivi();
+            lesCommandesDocuments = await controller.GetAllCommnadesDocuments();
 
-            commandeSuivisBase = controller.GetCommandesSuivisDTO();
+            commandeSuivisBase = await controller.GetCommandesSuivisDTO();
             commandeSuivis = new List<CommandeSuiviDTO>(commandeSuivisBase);
             RemplirCommandesListeComplete();
 
-            lesLivres = controller.GetAllLivres();
-            RemplirComboCategorie(controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
-            RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
-            RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
+            lesLivres = await controller.GetAllLivres();
+            RemplirComboCategorie(await controller.GetAllGenres(), bdgGenres, cbxLivresGenres);
+            RemplirComboCategorie(await controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
+            RemplirComboCategorie(await controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
 
-            documentUnitaires = controller.GetAllDocumentUnitaires();
+            documentUnitaires = await controller.GetAllDocumentUnitaires();
 
             RemplirListeLivresDisponibleComplete();
             RemplirLivresListeDisponible(livresdisponibles);
@@ -1767,9 +1767,9 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Permet de recharger complètement la liste des commandes
         /// </summary>
-        private void LoadDocumentUnitaire()
+        private async Task LoadDocumentUnitaire()
         {
-            List<DocumentUnitaire> documentUnitaires = controller.GetAllDocumentUnitaires();
+            List<DocumentUnitaire> documentUnitaires = await controller.GetAllDocumentUnitaires();
             ConfigurerColonnesDgvExemplaires(documentUnitaires);
         }
 
@@ -2030,7 +2030,7 @@ namespace MediaTekDocuments.view
             }
         }
 
-        private void NOMBRE_EXEMPLE_LIVRES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private async void NOMBRE_EXEMPLE_LIVRES_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneStatutCombo")
             {
@@ -2052,7 +2052,7 @@ namespace MediaTekDocuments.view
                     };
 
                     // Envoi à l'API via la méthode existante
-                    bool success = controller.ModifierEtatDocumentUnitaire(Id, nouveauStatut);
+                    bool success = await controller.ModifierEtatDocumentUnitaire(Id, nouveauStatut);
 
                     if (success)
                     {
@@ -2066,7 +2066,7 @@ namespace MediaTekDocuments.view
             }
         }
 
-        private void NOMBRE_EXEMPLE_LIVRES_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void NOMBRE_EXEMPLE_LIVRES_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (NOMBRE_EXEMPLE_LIVRES.Columns[e.ColumnIndex].Name == "ColonneSuppression" && e.RowIndex >= 0)
             {
@@ -2077,7 +2077,7 @@ namespace MediaTekDocuments.view
                     string Id = row.Id;
 
 
-                    bool success = controller.SupprimerDocumentUnitaire(Id);
+                    bool success = await controller.SupprimerDocumentUnitaire(Id);
                     if (success)
                     {
                         MessageBox.Show("Livre supprimé avec succès !");
@@ -2096,7 +2096,7 @@ namespace MediaTekDocuments.view
                         string Id = row.Id;
 
 
-                        bool success = controller.SupprimerDocumentUnitaire(Id);
+                        bool success = await controller.SupprimerDocumentUnitaire(Id);
                         if (success)
                         {
                             MessageBox.Show("Livre supprimé avec succès !");
@@ -2131,9 +2131,9 @@ namespace MediaTekDocuments.view
         /// <summary>
         /// Permet de recharger complètement la liste des exemplaires
         /// </summary>
-        private void LoadExemplaire()
+        private async Task LoadExemplaire()
         {
-            List<DocumentUnitaire> exemplaires = controller.GetAllDocumentUnitaires();
+            List<DocumentUnitaire> exemplaires = await controller.GetAllDocumentUnitaires();
             ConfigurerColonnesDgvExemplaires(exemplaires);
         }
 

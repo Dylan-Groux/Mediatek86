@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using MediaTekDocuments.model;
 using MediaTekDocuments.dal;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 public class TestCommandesDocuments
 {
-    public void TesterRecuperationCommandes()
+    public async Task TesterRecuperationCommandes()
     {
         Access access = new Access();
-        List<CommandesDocuments> toutesLesCommandes = access.GetAllCommandesDocuments();
+        List<CommandesDocuments> toutesLesCommandes = await access.GetAllCommandesDocuments();
 
         if (toutesLesCommandes != null && toutesLesCommandes.Count > 0)
         {

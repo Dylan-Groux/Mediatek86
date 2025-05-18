@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.ComponentModel.Design;
 using MediaTekDocuments.view;
+using System.Threading;
 
 namespace MediaTekDocuments.controller
 {
@@ -25,6 +26,7 @@ namespace MediaTekDocuments.controller
         /// </summary>
         public FrmMediatekController()
         {
+            
             access = Access.GetInstance();
         }
 
@@ -32,54 +34,60 @@ namespace MediaTekDocuments.controller
         /// getter sur la liste des genres
         /// </summary>
         /// <returns>Liste d'objets Genre</returns>
-        public List<Categorie> GetAllGenres()
+        public async Task<List<Categorie>> GetAllGenres()
         {
-            return access.GetAllGenres();
+            
+            return await access.GetAllGenres();
         }
 
         /// <summary>
         /// getter sur la liste des livres
         /// </summary>
         /// <returns>Liste d'objets Livre</returns>
-        public List<Livre> GetAllLivres()
+        public async Task<List<Livre>> GetAllLivres()
         {
-            return access.GetAllLivres();
+            
+            return await access.GetAllLivres();
         }
 
         /// <summary>
         /// getter sur la liste des Dvd
         /// </summary>
         /// <returns>Liste d'objets dvd</returns>
-        public List<Dvd> GetAllDvd()
+        public async Task<List<Dvd>> GetAllDvd()
         {
-            return access.GetAllDvd();
+            
+            return await access.GetAllDvd();
         }
 
         /// <summary>
         /// getter sur la liste des revues
         /// </summary>
         /// <returns>Liste d'objets Revue</returns>
-        public List<Revue> GetAllRevues()
+        public async Task<List<Revue>> GetAllRevues()
         {
-            return access.GetAllRevues();
+            
+            return await access.GetAllRevues();
         }
 
         /// <summary>
         /// getter sur les rayons
         /// </summary>
         /// <returns>Liste d'objets Rayon</returns>
-        public List<Categorie> GetAllRayons()
+        public async Task<List<Categorie>> GetAllRayons()
         {
-            return access.GetAllRayons();
+            
+            return await access.GetAllRayons();
         }
 
         /// <summary>
         /// getter sur les publics
         /// </summary>
         /// <returns>Liste d'objets Public</returns>
-        public List<Categorie> GetAllPublics()
+        public async Task<List<Categorie>> GetAllPublics()
         {
-            return access.GetAllPublics();
+            
+            return await access.GetAllPublics();
         }
 
 
@@ -88,9 +96,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="idDocuement">id de la revue concernée</param>
         /// <returns>Liste d'objets Exemplaire</returns>
-        public List<Exemplaire> GetExemplairesRevue(string idDocuement)
+        public async Task<List<Exemplaire>> GetExemplairesRevue(string idDocuement)
         {
-            return access.GetExemplairesRevue(idDocuement);
+            
+            return await access.GetExemplairesRevue(idDocuement);
         }
 
         /// <summary>
@@ -98,23 +107,25 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="exemplaire">L'objet Exemplaire concerné</param>
         /// <returns>True si la création a pu se faire</returns>
-        public bool CreerExemplaire(Exemplaire exemplaire)
+        public async Task<bool> CreerExemplaire(Exemplaire exemplaire)
         {
-            return access.CreerExemplaire(exemplaire);
+            
+            return await access.CreerExemplaire(exemplaire);
         }
 
         /// <summary>
         /// getter sur la liste des Commandes
         /// </summary>
         /// <returns>Liste d'objets Commandes</returns>
-        public List<Commande> GetAllCommandes()
+        public async Task<List<Commande>> GetAllCommandes()
         {
+            
             var commandes = access.GetAllCommandes();
 
             //string allIds = string.Join(", ", commandes.Select(c => c.Id));
             //MessageBox.Show("GetAllCommandes(): " + allIds);
 
-            return commandes;
+            return await commandes;
         }
 
 
@@ -122,8 +133,9 @@ namespace MediaTekDocuments.controller
         /// getter sur la liste des Suivi
         /// </summary>
         /// <returns>Liste d'objets Suivi</returns>
-        public List<Suivi> GetAllSuivi()
+        public async Task<List<Suivi>> GetAllSuivi()
         {
+            
             var suivis = access.GetAllSuivi();
 
            // if (suivis == null)
@@ -132,28 +144,30 @@ namespace MediaTekDocuments.controller
            //     return new List<Suivi>(); // Retourne une liste vide si null
            // }
 
-            return suivis;
+            return await suivis;
         }
 
-        public Commande GetCommandeAvecSuivis(string commandeId)
+        public async Task<Commande> GetCommandeAvecSuivis(string commandeId)
         {
-            // Supposons que tu récupères une commande par son Id
-            var commande = GetAllCommandes().FirstOrDefault(c => c.Id == commandeId);
+            var commandes = await GetAllCommandes();
+            var commande = commandes.FirstOrDefault(c => c.Id == commandeId);
 
             if (commande != null)
             {
-                // Récupérer tous les suivis associés à cette commande (tu peux le faire via une jointure)
-                var suivis = GetAllSuivi().Where(s => s.IdCommande == commande.Id).ToList();
+                var suivis = await GetAllSuivi();
+                var suivisDeLaCommande = suivis.Where(s => s.IdCommande == commande.Id).ToList();
             }
 
             return commande;
         }
 
-        public List<CommandeSuiviDTO> GetCommandesSuivisDTO()
+
+        public async Task<List<CommandeSuiviDTO>> GetCommandesSuivisDTO()
         {
-            var commandes = GetAllCommandes();
-            var suivis = GetAllSuivi();
-            var commandesdocuments = GetAllCommnadesDocuments();
+            
+            var commandes = await GetAllCommandes();
+            var suivis = await GetAllSuivi();
+            var commandesdocuments = await GetAllCommnadesDocuments();
 
             // Log pour vérifier la taille des listes
             // MessageBox.Show($"Commandes : {commandes.Count}, Suivis : {suivis.Count}");
@@ -179,9 +193,10 @@ namespace MediaTekDocuments.controller
             return result.ToList();
         }
 
-        public List<CommandesDocuments> GetAllCommnadesDocuments()
+        public async Task<List<CommandesDocuments>> GetAllCommnadesDocuments()
         {
-            return access.GetAllCommnadesDocuments();
+            
+            return await access.GetAllCommnadesDocuments();
         }
 
 
@@ -190,9 +205,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="commande"></param>
         /// <returns></returns>
-        public bool CreerCommande(Commande commande)
+        public async Task<bool> CreerCommande(Commande commande)
         {
-            return access.CreerCommande(commande);
+            
+            return await access.CreerCommande(commande);
         }
 
 
@@ -203,9 +219,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="suivi"></param>
         /// <returns></returns>
-        public bool CreerSuivi(Suivi suivi)
+        public async Task<bool> CreerSuivi(Suivi suivi)
         {
-            return access.CreerSuivi(suivi);
+            
+            return await access.CreerSuivi(suivi);
         }
 
 
@@ -216,9 +233,9 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="commandedocument"></param>
         /// <returns></returns>
-        public bool CreerCommandeDocument(CommandesDocuments commandedocument)
+        public async Task<bool> CreerCommandeDocument(CommandesDocuments commandedocument)
         {
-            return access.CreerCommandeDocument(commandedocument);
+            return await access.CreerCommandeDocument(commandedocument);
         }
 
         /// <summary>
@@ -234,9 +251,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        public string GenerateCommandeId()
+        public async Task<string> GenerateCommandeId()
         {
-            var allCommandes = access.GetAllCommandes();
+            
+            var allCommandes = await access.GetAllCommandes();
             var lastCommandeId = allCommandes
                 .OrderByDescending(c => c.Id) 
                 .FirstOrDefault()?.Id;
@@ -299,9 +317,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        public string GenerateSuiviId()
+        public async Task<string> GenerateSuiviId()
         {
-            var allSuivis = access.GetAllSuivi();
+            
+            var allSuivis = await access.GetAllSuivi();
             var lastSuiviId = allSuivis
                 .OrderByDescending(c => c.id_suivi)
                 .FirstOrDefault()?.id_suivi;
@@ -365,9 +384,10 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        public string GenerateCommandeDocumentId()
+        public async Task<string> GenerateCommandeDocumentId()
         {
-            var allCommandeDocuments = access.GetAllCommandesDocuments();
+            
+            var allCommandeDocuments = await access.GetAllCommandesDocuments();
             var lastCommandeDocumentId = allCommandeDocuments
                 .OrderByDescending(c => c.id_commandedocument)
                 .FirstOrDefault()?.id_commandedocument;
@@ -422,46 +442,52 @@ namespace MediaTekDocuments.controller
         /// <param name="commandeId">ID de la commande</param>
         /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
         /// <returns>Retourne true si la mise à jour a réussi</returns>
-        public bool ModifierStatutCommande(string idSuivi, string commandeId, int nouveauStatut)
+        public async Task<bool> ModifierStatutCommande(string idSuivi, string commandeId, int nouveauStatut)
         {
-            return access.UpdateStatutSuivi(idSuivi, commandeId, nouveauStatut);
+            
+            return await access.UpdateStatutSuivi(idSuivi, commandeId, nouveauStatut);
         }
 
-        public bool SupprimerCommande(string commandeId)
+        public async Task<bool> SupprimerCommande(string commandeId)
         {
+            
             //MessageBox.Show(commandeId);
             var commande = new Commande { Id = commandeId };
-            return access.SupprimerCommande(commande);
+            return await access.SupprimerCommande(commande);
         }
 
-        public bool SupprimerCommandeDocument(string commandedocumentId)
+        public async Task<bool> SupprimerCommandeDocument(string commandedocumentId)
         {
+            
             //MessageBox.Show(commandedocumentId);
             var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId  };
-            return access.SupprimerCommandeDocument(commandedocument);
+            return await access.SupprimerCommandeDocument(commandedocument);
         }
 
-        public bool SupprimerNbExemplaire(string commandedocumentId)
+        public async Task<bool> SupprimerNbExemplaire(string commandedocumentId)
         {
+            
             //MessageBox.Show(commandedocumentId);
             var commandedocument = new CommandesDocuments { id_commandedocument = commandedocumentId };
-            return access.SupprimerCommandeDocument(commandedocument);
+            return await access.SupprimerCommandeDocument(commandedocument);
         }
 
 
-        public bool SupprimerSuivi(string idSuivi)
+        public async Task<bool> SupprimerSuivi(string idSuivi)
         {
+            
             //MessageBox.Show(idSuivi);
             var suivi = new Suivi { id_suivi = idSuivi };
-            return access.SupprimerSuivi(suivi);
+            return await access.SupprimerSuivi(suivi);
         }
 
         #region DocumentUnitaire
-        public List<DocumentUnitaire> GetAllDocumentUnitaires()
+        public async Task<List<DocumentUnitaire>> GetAllDocumentUnitaires()
         {
-           var documentunitaire = access.GetAllDocumentUnitaires();
+            
+            var documentunitaire = access.GetAllDocumentUnitaires();
 
-            return documentunitaire;
+            return await documentunitaire;
         }
 
 
@@ -470,15 +496,17 @@ namespace MediaTekDocuments.controller
         /// </summary>
         /// <param name="suivi"></param>
         /// <returns></returns>
-        public bool CreerDocumentUnitaire(DocumentUnitaire documentUnitaire)
+        public async Task<bool> CreerDocumentUnitaire(DocumentUnitaire documentUnitaire)
         {
-            return access.CreerDocumentUnitaire(documentUnitaire);
+            
+            return await access.CreerDocumentUnitaire(documentUnitaire);
         }
 
 
-        public string GenerateDocumentUnitaireId()
+        public async Task<string> GenerateDocumentUnitaireId()
         {
-            var allDocumentUnitaire = access.GetAllDocumentUnitaires();
+            
+            var allDocumentUnitaire = await access.GetAllDocumentUnitaires();
             var lastCommandeDocumentId = allDocumentUnitaire
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefault()?.Id;
@@ -525,20 +553,21 @@ namespace MediaTekDocuments.controller
             return newCommandeDocumentId;
         }
 
-        public void GenererDocumentUnitairesPourCommande(CommandesDocuments commande)
+        public async Task GenererDocumentUnitairesPourCommande(CommandesDocuments commande)
         {
+            
             for (int i = 0; i < commande.nbExemplaire; i++)
             {
                 DocumentUnitaire nouveauDocumentUnitaire = new DocumentUnitaire
                 {
-                    Id = GenerateDocumentUnitaireId(), // tu vas créer cette méthode juste en dessous
+                    Id = await GenerateDocumentUnitaireId(), // tu vas créer cette méthode juste en dessous
                     IdDocument = commande.id_document,
                     Etat = 1, // état "neuf"
                     DateAchat = DateTime.Now,
                     IdCommande = commande.id_commande,
                 };
 
-                bool success = CreerDocumentUnitaire(nouveauDocumentUnitaire);
+                bool success = await CreerDocumentUnitaire(nouveauDocumentUnitaire);
                 if (!success)
                 {
                     MessageBox.Show($"Erreur lors de la création de l'exemplaire {i + 1} pour le document {commande.id_document}");
@@ -552,23 +581,25 @@ namespace MediaTekDocuments.controller
         /// <param name="commandeId">ID de la commande</param>
         /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
         /// <returns>Retourne true si la mise à jour a réussi</returns>
-        public bool ModifierEtatDocumentUnitaire(string Id, int nouveauStatut)
+        public async Task<bool> ModifierEtatDocumentUnitaire(string Id, int nouveauStatut)
         {
-            return access.UpdateEtatDocumentUnitaire(Id, nouveauStatut);
+             // pause de 2 secondes (200 ms)
+            return await access.UpdateEtatDocumentUnitaire(Id, nouveauStatut);
         }
 
-        public bool SupprimerDocumentUnitaire(string Id)
+        public async Task<bool> SupprimerDocumentUnitaire(string Id)
         {
+             // pause de 2 secondes (200 ms)
             //MessageBox.Show(Id);
             var documentUnitaire = new DocumentUnitaire { Id = Id };
-            return access.SupprimerDocumentUnitaire(documentUnitaire);
+            return await access.SupprimerDocumentUnitaire(documentUnitaire);
         }
         #endregion
         #region Login
 
-        public User LoginUtilisateur(string username, string password)
+        public async Task<User> LoginUtilisateur(string username, string password)
         {
-            return access.LoginUtilisateur(username, password);
+            return await access.LoginUtilisateur(username, password);
         }
         #endregion
     }

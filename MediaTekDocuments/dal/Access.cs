@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using MediaTekDocuments.model;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MediaTekDocuments.controller;
 using MediaTekDocuments.manager;
+using MediaTekDocuments.model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System.Configuration;
-using System.Linq;
-using System.Windows.Forms;
-using System.ComponentModel.Design;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Text;
-using System.Net;
-using System.Xml.Linq;
-using MediaTekDocuments.controller;
 
 namespace MediaTekDocuments.dal
 {
@@ -26,7 +22,7 @@ namespace MediaTekDocuments.dal
         /// <summary>
         /// adresse de l'API
         /// </summary>
-        private static readonly string uriApi = "http://localhost/rest_mediatekdocuments/";
+        private static readonly string uriApi = "http://localhost/testrest/rest_mediatekdocuments/";
         /// <summary>
         /// instance unique de la classe
         /// </summary>
@@ -82,9 +78,9 @@ namespace MediaTekDocuments.dal
         /// Retourne tous les genres à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Genre</returns>
-        public List<Categorie> GetAllGenres()
+        public async Task<List<Categorie>> GetAllGenres()
         {
-            IEnumerable<Genre> lesGenres = TraitementRecup<Genre>(GET, "genre", null);
+            IEnumerable<Genre> lesGenres = await TraitementRecup<Genre>(GET, "genre", null);
             return new List<Categorie>(lesGenres);
         }
 
@@ -92,9 +88,9 @@ namespace MediaTekDocuments.dal
         /// Retourne tous les rayons à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Rayon</returns>
-        public List<Categorie> GetAllRayons()
+        public async Task<List<Categorie>> GetAllRayons()
         {
-            IEnumerable<Rayon> lesRayons = TraitementRecup<Rayon>(GET, "rayon", null);
+            IEnumerable<Rayon> lesRayons = await TraitementRecup<Rayon>(GET, "rayon", null);
             return new List<Categorie>(lesRayons);
         }
 
@@ -102,9 +98,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les catégories de public à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Public</returns>
-        public List<Categorie> GetAllPublics()
+        public async Task<List<Categorie>> GetAllPublics()
         {
-            IEnumerable<Public> lesPublics = TraitementRecup<Public>(GET, "public", null);
+            IEnumerable<Public> lesPublics = await TraitementRecup<Public>(GET, "public", null);
             return new List<Categorie>(lesPublics);
         }
 
@@ -112,9 +108,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les livres à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Livre</returns>
-        public List<Livre> GetAllLivres()
+        public async Task<List<Livre>> GetAllLivres()
         {
-            List<Livre> lesLivres = TraitementRecup<Livre>(GET, "livre", null);
+            List<Livre> lesLivres = await TraitementRecup<Livre>(GET, "livre", null);
             return lesLivres;
         }
 
@@ -122,9 +118,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les dvd à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Dvd</returns>
-        public List<Dvd> GetAllDvd()
+        public async Task<List<Dvd>> GetAllDvd()
         {
-            List<Dvd> lesDvd = TraitementRecup<Dvd>(GET, "dvd", null);
+            List<Dvd> lesDvd = await TraitementRecup<Dvd>(GET, "dvd", null);
             return lesDvd;
         }
 
@@ -132,9 +128,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les revues à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Revue</returns>
-        public List<Revue> GetAllRevues()
+        public async Task<List<Revue>> GetAllRevues()
         {
-            List<Revue> lesRevues = TraitementRecup<Revue>(GET, "revue", null);
+            List<Revue> lesRevues = await TraitementRecup<Revue>(GET, "revue", null);
             return lesRevues;
         }
 
@@ -144,10 +140,10 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="idDocument">id de la revue concernée</param>
         /// <returns>Liste d'objets Exemplaire</returns>
-        public List<Exemplaire> GetExemplairesRevue(string idDocument)
+        public async Task<List<Exemplaire>> GetExemplairesRevue(string idDocument)
         {
             String jsonIdDocument = convertToJson("id", idDocument);
-            List<Exemplaire> lesExemplaires = TraitementRecup<Exemplaire>(GET, "exemplaire/" + jsonIdDocument, null);
+            List<Exemplaire> lesExemplaires = await TraitementRecup<Exemplaire>(GET, "exemplaire/" + jsonIdDocument, null);
             return lesExemplaires;
         }
 
@@ -156,12 +152,12 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="exemplaire">exemplaire à insérer</param>
         /// <returns>true si l'insertion a pu se faire (retour != null)</returns>
-        public bool CreerExemplaire(Exemplaire exemplaire)
+        public async Task<bool> CreerExemplaire(Exemplaire exemplaire)
         {
             String jsonExemplaire = JsonConvert.SerializeObject(exemplaire, new CustomDateTimeConverter());
             try
             {
-                List<Exemplaire> liste = TraitementRecup<Exemplaire>(POST, "exemplaire", "champs=" + jsonExemplaire);
+                List<Exemplaire> liste = await TraitementRecup<Exemplaire>(POST, "exemplaire", "champs=" + jsonExemplaire);
                 return (liste != null);
             }
             catch (Exception ex)
@@ -179,28 +175,21 @@ namespace MediaTekDocuments.dal
         /// <param name="message">information envoyée dans l'url</param>
         /// <param name="parametres">paramètres à envoyer dans le body, au format "chp1=val1&chp2=val2&..."</param>
         /// <returns>liste d'objets récupérés (ou liste vide)</returns>
-        private List<T> TraitementRecup<T>(String methode, String message, String parametres)
+        private async Task<List<T>> TraitementRecup<T>(string methode, string message, string parametres)
         {
-            // trans
             List<T> liste = new List<T>();
             try
             {
-                JObject retour = api.RecupDistant(methode, message, parametres);
-                // extraction du code retourné
-                String code = (String)retour["code"];
-                if (code.Equals("200"))
+                JObject retour = await api.RecupDistant(methode, message, parametres);
+                string code = (string)retour["code"];
+                if (code.Equals("200") && methode.Equals(GET))
                 {
-                    // dans le cas du GET (select), récupération de la liste d'objets
-                    if (methode.Equals(GET))
-                    {
-                        String resultString = JsonConvert.SerializeObject(retour["result"]);
-                        // construction de la liste d'objets à partir du retour de l'api
-                        liste = JsonConvert.DeserializeObject<List<T>>(resultString, new CustomBooleanJsonConverter());
-                    }
+                    string resultString = JsonConvert.SerializeObject(retour["result"]);
+                    liste = JsonConvert.DeserializeObject<List<T>>(resultString, new CustomBooleanJsonConverter());
                 }
                 else
                 {
-                    Console.WriteLine("code erreur = " + code + " message = " + (String)retour["message"]);
+                    Console.WriteLine("code erreur = " + code + " message = " + (string)retour["message"]);
                 }
             }
             catch (Exception e)
@@ -212,13 +201,14 @@ namespace MediaTekDocuments.dal
             return liste;
         }
 
+
         /// <summary>
         /// Envoie une requête DELETE à l'API avec les paramètres spécifiés
         /// </summary>
         /// <param name="message">Nom de la table</param>
         /// <param name="parametres">Paramètres de suppression au format "champs={...}"</param>
         /// <returns>true si la suppression a réussi, false sinon</returns>
-        private bool TraitementDelete(string table, string jsonChamps)
+        private async Task<bool> TraitementDelete(string table, string jsonChamps)
         {
             try
             {
@@ -227,12 +217,12 @@ namespace MediaTekDocuments.dal
                 // Log de debug : ce qui est envoyé
                 //MessageBox.Show("Tentative suppression\nTable : " + table + "\nData : " + postData, "DEBUG - DELETE");
 
-                JObject retour = api.RecupDistant(DELETE, table, postData);
+                JObject retour = await api.RecupDistant(DELETE, table, postData);
 
                 string code = (string)retour["code"];
                 string retourMessage = (string)retour["message"];
 
-               // MessageBox.Show("Code retour : " + code + "\nMessage : " + retourMessage, "DEBUG - Résultat API");
+                // MessageBox.Show("Code retour : " + code + "\nMessage : " + retourMessage, "DEBUG - Résultat API");
 
                 return code == "200";
             }
@@ -294,9 +284,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les commandes à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Commandes</returns>
-        public List<Commande> GetAllCommandes()
+        public async Task<List<Commande>> GetAllCommandes()
         {
-            var commandes = TraitementRecup<Commande>(GET, "commande", null);
+            var commandes = await TraitementRecup<Commande>(GET, "commande", null);
 
             string ids = string.Join(", ", commandes.Select(c => c.Id));
             //MessageBox.Show("API a renvoyé : " + ids);
@@ -309,13 +299,13 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="commande">Commande à insérer</param>
         /// <returns>true si l'insertion réussit</returns>
-        public bool CreerCommande(Commande commande)
+        public async Task<bool> CreerCommande(Commande commande)
         {
             string jsonCommande = JsonConvert.SerializeObject(commande, new CustomDateTimeConverter());
             //MessageBox.Show("JSON Commande envoyée : " + jsonCommande);
             try
             {
-                List<Commande> liste = TraitementRecup<Commande>(POST, "commande", "champs=" + jsonCommande);
+                List<Commande> liste = await TraitementRecup<Commande>(POST, "commande", "champs=" + jsonCommande);
                 return (liste != null);
             }
             catch (Exception ex)
@@ -333,9 +323,9 @@ namespace MediaTekDocuments.dal
         /// Retourne tous les suivi à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets Suivi</returns>
-        public List<Suivi> GetAllSuivi()
+        public async Task<List<Suivi>> GetAllSuivi()
         {
-            List<Suivi> lesSuivi = TraitementRecup<Suivi>(GET, "suivi", null);
+            List<Suivi> lesSuivi = await TraitementRecup<Suivi>(GET, "suivi", null);
             return lesSuivi;
         }
 
@@ -345,13 +335,13 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="suivi">Suivi à insérer</param>
         /// <returns>true si l'insertion réussit</returns>
-        public bool CreerSuivi(Suivi suivi)
+        public async Task<bool> CreerSuivi(Suivi suivi)
         {
             string jsonSuivi = JsonConvert.SerializeObject(suivi, new CustomDateTimeConverter());
             //MessageBox.Show("JSON Commande envoyée : " + jsonSuivi);
             try
             {
-                List<Suivi> liste = TraitementRecup<Suivi>(POST, "suivi", "champs=" + jsonSuivi);
+                List<Suivi> liste = await TraitementRecup<Suivi>(POST, "suivi", "champs=" + jsonSuivi);
                 return (liste != null);
             }
             catch (Exception ex)
@@ -368,7 +358,7 @@ namespace MediaTekDocuments.dal
         /// <param name="commandeId">ID de la commande</param>
         /// <param name="nouveauStatut">Le nouveau statut à appliquer</param>
         /// <returns>Retourne true si la mise à jour a réussi</returns>
-        public bool UpdateStatutSuivi(string idSuivi, string idCommande, int nouveauStatut)
+        public async Task<bool> UpdateStatutSuivi(string idSuivi, string idCommande, int nouveauStatut)
         {
             // Prépare les données à envoyer
             var data = new Dictionary<string, string>
@@ -390,7 +380,7 @@ namespace MediaTekDocuments.dal
                     var content = new FormUrlEncodedContent(data);
 
                     // Appel à l'API avec PUT
-                    var response = client.PutAsync($"http://localhost/rest_mediatekdocuments/suivi/{idSuivi}", content).Result;
+                    var response = await client.PutAsync($"http://localhost/rest_mediatekdocuments/suivi/{idSuivi}", content);
 
                     return response.IsSuccessStatusCode;
                 }
@@ -408,9 +398,9 @@ namespace MediaTekDocuments.dal
         #region CommandesDocuments
 
         //Pour l'exploitation de la donnée par la suite (DGV - CBX  ...) 
-        public List<CommandesDocuments> GetAllCommnadesDocuments()
+        public async Task<List<CommandesDocuments>> GetAllCommnadesDocuments()
         {
-            List<CommandesDocuments> lesCommandesDocuments = TraitementRecup<CommandesDocuments>(GET, "commandedocument", null);
+            List<CommandesDocuments> lesCommandesDocuments = await TraitementRecup<CommandesDocuments>(GET, "commandedocument", null);
             return lesCommandesDocuments;
         }
 
@@ -419,13 +409,13 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="commandedocument">CommandesDocuments à insérer</param>
         /// <returns>true si l'insertion réussit</returns>
-        public bool CreerCommandeDocument(CommandesDocuments commandedocument)
+        public async Task<bool> CreerCommandeDocument(CommandesDocuments commandedocument)
         {
             string jsonCommandesDocuments = JsonConvert.SerializeObject(commandedocument, new CustomDateTimeConverter());
             //MessageBox.Show("JSON Commande envoyée : " + jsonCommandesDocuments);
             try
             {
-                List<CommandesDocuments> liste = TraitementRecup<CommandesDocuments>(POST, "commandedocument", "champs=" + jsonCommandesDocuments);
+                List<CommandesDocuments> liste = await TraitementRecup<CommandesDocuments>(POST, "commandedocument", "champs=" + jsonCommandesDocuments);
                 return (liste != null);
             }
             catch (Exception ex)
@@ -437,15 +427,15 @@ namespace MediaTekDocuments.dal
 
         #region Test de la table
         // Pour le test de la table 
-        public List<CommandesDocuments> GetAllCommandesDocuments()
+        public async Task<List<CommandesDocuments>> GetAllCommandesDocuments()
         {
-            return TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
+            return await TraitementRecup<CommandesDocuments>("GET", "commandedocument", null);
         }
         #endregion
 
         #endregion
 
-        public bool SupprimerSuivi(Suivi suivi)
+        public async Task<bool> SupprimerSuivi(Suivi suivi)
         {
             string jsonSuiviDelete = JsonConvert.SerializeObject(new { id = suivi.id_suivi });
 
@@ -453,7 +443,7 @@ namespace MediaTekDocuments.dal
 
             try
             {
-                return TraitementDelete("suivi", jsonSuiviDelete);
+                return await TraitementDelete("suivi", jsonSuiviDelete);
             }
             catch (Exception ex)
             {
@@ -463,7 +453,7 @@ namespace MediaTekDocuments.dal
             return false;
         }
 
-        public bool SupprimerCommandeDocument(CommandesDocuments commandedocument)
+        public async Task<bool> SupprimerCommandeDocument(CommandesDocuments commandedocument)
         {
             string jsonCommandeDocumentDelete = JsonConvert.SerializeObject(new { id = commandedocument.id_commandedocument });
 
@@ -472,7 +462,7 @@ namespace MediaTekDocuments.dal
 
             try
             {
-                return TraitementDelete("commandedocument", jsonCommandeDocumentDelete);
+                return await TraitementDelete("commandedocument", jsonCommandeDocumentDelete);
             }
             catch (Exception ex)
             {
@@ -484,7 +474,7 @@ namespace MediaTekDocuments.dal
         }
 
 
-        public bool SupprimerCommande(Commande commande)
+        public async Task<bool> SupprimerCommande(Commande commande)
         {
             string jsonCommandeDelete = JsonConvert.SerializeObject(new { id = commande.Id });
 
@@ -493,7 +483,7 @@ namespace MediaTekDocuments.dal
 
             try
             {
-                return TraitementDelete("commande", jsonCommandeDelete);
+                return await TraitementDelete("commande", jsonCommandeDelete);
             }
             catch (Exception ex)
             {
@@ -511,9 +501,9 @@ namespace MediaTekDocuments.dal
         /// Retourne toutes les DocumentUnitaires à partir de la BDD
         /// </summary>
         /// <returns>Liste d'objets DocumentUnitaires</returns>
-        public List<DocumentUnitaire> GetAllDocumentUnitaires()
+        public async Task<List<DocumentUnitaire>> GetAllDocumentUnitaires()
         {
-            List<DocumentUnitaire> documentunitaire = TraitementRecup<DocumentUnitaire>(GET, "documentunitaire", null);
+            List<DocumentUnitaire> documentunitaire = await TraitementRecup<DocumentUnitaire>(GET, "documentunitaire", null);
             return documentunitaire;
         }
 
@@ -522,13 +512,13 @@ namespace MediaTekDocuments.dal
         /// </summary>
         /// <param name="DocumentUnitaire">DocumentUnitaire à insérer</param>
         /// <returns>true si l'insertion réussit</returns>
-        public bool CreerDocumentUnitaire(DocumentUnitaire documentunitaire)
+        public async Task<bool> CreerDocumentUnitaire(DocumentUnitaire documentunitaire)
         {
             string jsonDocumentUnitaire = JsonConvert.SerializeObject(documentunitaire, new CustomDateTimeConverter());
             MessageBox.Show("JSON DocumentUnitaire envoyée : " + jsonDocumentUnitaire);
             try
             {
-                List<DocumentUnitaire> liste = TraitementRecup<DocumentUnitaire>(POST, "documentunitaire", "champs=" + jsonDocumentUnitaire);
+                List<DocumentUnitaire> liste = await TraitementRecup<DocumentUnitaire>(POST, "documentunitaire", "champs=" + jsonDocumentUnitaire);
                 return (liste != null);
             }
             catch (Exception ex)
@@ -544,7 +534,7 @@ namespace MediaTekDocuments.dal
         /// <param name="Id">ID du document unitaire</param>
         /// <param name="nouveauStatut">Le nouvel état à appliquer</param>
         /// <returns>Retourne true si la mise à jour a réussi, false sinon</returns>
-        public bool UpdateEtatDocumentUnitaire(string Id, int nouveauStatut)
+        public async Task<bool> UpdateEtatDocumentUnitaire(string Id, int nouveauStatut)
         {
             // Prépare les données à envoyer
             var data = new Dictionary<string, string>
@@ -565,7 +555,7 @@ namespace MediaTekDocuments.dal
                     var content = new FormUrlEncodedContent(data);
 
                     // Appel à l'API avec PUT
-                    var response = client.PutAsync($"http://localhost/rest_mediatekdocuments/documentunitaire/{Id}", content).Result;
+                    var response = await client.PutAsync($"http://localhost/rest_mediatekdocuments/documentunitaire/{Id}", content);
 
                     return response.IsSuccessStatusCode;
                 }
@@ -577,7 +567,7 @@ namespace MediaTekDocuments.dal
             }
         }
 
-        public bool SupprimerDocumentUnitaire(DocumentUnitaire documentUnitaire)
+        public async Task<bool> SupprimerDocumentUnitaire(DocumentUnitaire documentUnitaire)
         {
             string jsonDocUnitaireDelete = JsonConvert.SerializeObject(new { id = documentUnitaire.Id });
 
@@ -586,7 +576,7 @@ namespace MediaTekDocuments.dal
 
             try
             {
-                return TraitementDelete("documentunitaire", jsonDocUnitaireDelete);
+                return await TraitementDelete("documentunitaire", jsonDocUnitaireDelete);
             }
             catch (Exception ex)
             {
@@ -599,12 +589,12 @@ namespace MediaTekDocuments.dal
 
         #endregion
         #region Login 
-        public User LoginUtilisateur(string username, string password)
+        public async Task<User> LoginUtilisateur(string username, string password)
         {
             try
             {
                 // Récupération de tous les utilisateurs via GET
-                List<User> users = TraitementRecup<User>("GET", "user", null);
+                List<User> users = await TraitementRecup<User>("GET", "user", null);
 
                 if (users != null && users.Count > 0)
                 {

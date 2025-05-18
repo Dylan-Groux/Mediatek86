@@ -32,6 +32,8 @@ namespace MediaTekDocuments
                 }
                 else
                 {
+                    Console.WriteLine("Fin du traitement. Appuyez sur une touche pour quitter.");
+                    Console.Read();
                     // Sinon quitter proprement
                     Application.Exit();
                 }

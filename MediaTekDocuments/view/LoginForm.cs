@@ -23,7 +23,7 @@ namespace MediaTekDocuments.view
 
         private readonly FrmMediatekController controller;
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private async void btnLogin_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtUsername.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
             {
@@ -31,7 +31,7 @@ namespace MediaTekDocuments.view
                 return;
             }
 
-            var user = controller.LoginUtilisateur(username: txtUsername.Text, password: txtPassword.Text);
+            var user = await controller.LoginUtilisateur(username: txtUsername.Text, password: txtPassword.Text);
 
             if (user != null)
             {
