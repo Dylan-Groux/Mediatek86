@@ -36,10 +36,26 @@ L’application propose une interface **simple** et **efficace** pour centralise
 ## 📸 **Aperçu de l’application**
 
 ![Ajout commande](./captures/addcommande.PNG)  
+
+
+
 ![Commandes livres](./captures/commandeslivres.PNG)  
+
+
+
 ![Liste livres](./captures/livres.PNG)  
+
+
+
+
 ![Livres disponibles](./captures/livresdisponibles.PNG)  
+
+
+
 ![Parution revue](./captures/parutionrevue.PNG)  
+
+
+
 ![Revues](./captures/revues.PNG)  
 
 ---
