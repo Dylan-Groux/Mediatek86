@@ -102,7 +102,6 @@ Ce contrôleur gère la logique métier de l'application MediaTekDocuments en or
 
 ### 📌 Exemple d'utilisation
 
-```csharp
 FrmMediatekController controller = new FrmMediatekController();
 var livres = await controller.GetAllLivres();
 string newCommandeId = await controller.GenerateCommandeId();
@@ -113,7 +112,7 @@ Les méthodes sont asynchrones (async/await) pour améliorer les performances et
 Les IDs sont générés automatiquement en fonction des derniers IDs existants en base pour garantir l'unicité et le bon format.
 
 Le contrôleur s'appuie exclusivement sur la couche d'accès aux données Access (singleton).
-```csharp
+
 ---
  
 ### 📄 Documentation Technique — LoginForm.cs
