@@ -6,11 +6,8 @@
 ## 📖 **Présentation**  
 **Mediatek86** est une application de bureau en C# conçue pour aider le personnel d’une médiathèque à gérer :
 
-- **Les abonnés**  
-- **Les livres**  
-- **Les DVD**  
+- **Les livres**   
 - **Les revues**  
-- **Les emprunts et retours**  
 - **Les commandes de documents**  
 
 L’application propose une interface **simple** et **efficace** pour centraliser toutes ces opérations.
@@ -20,30 +17,30 @@ L’application propose une interface **simple** et **efficace** pour centralise
 ## 🖥️ **Fonctionnalités principales**
 
 ### 📌 **Gestion des documents**  
-- Consulter la liste des **livres**, **DVD** et **revues** disponibles  
+- Consulter la liste des **livres** et **revues** disponibles  
 - Afficher les **caractéristiques** de chaque document  
-- Consulter les **exemplaires disponibles** pour chaque revue  
+- Consulter les **exemplaires disponibles** pour chaque livre 
 
 ### 📌 **Commandes de documents**  
-- Ajouter une **commande** pour un livre ou une revue  
+- Ajouter une **commande** pour un livre
 - Spécifier le **montant**, le **nombre d'exemplaires** et l’**identifiant** du document  
 - Visualiser les commandes existantes et leur **statut**  
 - Modifier le statut d'une commande selon son **avancement**  
 
 ### 📌 **Authentification**  
-- Connexion **sécurisée** via un identifiant et un mot de passe  
+- Connexion **sécurisée** via un identifiant et un mot de passe pour un usage local (Déconseiller en ligne !)
 - Gestion des **droits** en fonction du rôle de l’utilisateur  
 
 ---
 
 ## 📸 **Aperçu de l’application**
 
-![Ajout commande](./captures/addcommande.png)  
-![Commandes livres](./captures/commandeslivres.png)  
-![Liste livres](./captures/livres.png)  
-![Livres disponibles](./captures/livresdisponibles.png)  
-![Parution revue](./captures/parutionrevue.png)  
-![Revues](./captures/revues.png)  
+![Ajout commande](./captures/addcommande.PNG)  
+![Commandes livres](./captures/commandeslivres.PNG)  
+![Liste livres](./captures/livres.PNG)  
+![Livres disponibles](./captures/livresdisponibles.PNG)  
+![Parution revue](./captures/parutionrevue.PNG)  
+![Revues](./captures/revues.PNG)  
 
 ---
 
@@ -88,12 +85,6 @@ Vous pourrez ensuite **modifier l’état** d’une commande au fur et à mesure
 
 ---
 
-## 🛑 **Déconnexion**
-
-Utilisez le bouton **Déconnexion** pour quitter votre session en toute sécurité.
-
----
-
 ## 📌 **Informations supplémentaires**
 
 - Application fonctionnelle en environnement **Windows**  
@@ -111,7 +102,7 @@ Pour toute question ou problème, contactez l’**administrateur** de la médiat
 ## ✅ **Résumé des commandes**
 
 | Fonction                      | Comment faire                      |  
-|------------------------------|----------------------------------|  
+|------------------------------|----------------------------------   |  
 | **Se connecter**              | Saisir identifiant et mot de passe|  
 | **Ajouter une commande**      | Aller dans **Commandes → Ajouter commande** |  
 | **Modifier le statut d’une commande** | Menu **Commandes → Modifier statut** |  
