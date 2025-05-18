@@ -113,7 +113,7 @@ Les méthodes sont asynchrones (async/await) pour améliorer les performances et
 Les IDs sont générés automatiquement en fonction des derniers IDs existants en base pour garantir l'unicité et le bon format.
 
 Le contrôleur s'appuie exclusivement sur la couche d'accès aux données Access (singleton).
-
+```csharp
 ---
  
 ### 📄 Documentation Technique — LoginForm.cs
