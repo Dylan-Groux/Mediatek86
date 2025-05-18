@@ -122,5 +122,4 @@ Pour toute question ou problème, contactez l’**administrateur** de la médiat
 | **Se connecter**              | Saisir identifiant et mot de passe|  
 | **Ajouter une commande**      | Aller dans **Commandes → Ajouter commande** |  
 | **Modifier le statut d’une commande** | Menu **Commandes → Modifier statut** |  
-| **Consulter les documents**   | Onglet **Livres / DVD / Revues**  |  
-| **Se déconnecter**            | Bouton **Déconnexion**            |  
+| **Consulter les documents**   | Onglet **Livres / Revues**  |  
