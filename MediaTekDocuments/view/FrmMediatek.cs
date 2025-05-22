@@ -952,7 +952,6 @@ namespace MediaTekDocuments.view
         private List<CommandesDocuments> lesCommandesDocuments = new List<CommandesDocuments>();
         private List<Commande> lesCommandes = new List<Commande>();
         private bool isAscending = true; //Gestion d'état dynamique pour triage
-
         private List<CommandeSuiviDTO> commandeSuivis = new List<CommandeSuiviDTO>();
         private List<CommandeSuiviDTO> commandeSuivisBase;
 

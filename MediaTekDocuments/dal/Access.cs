@@ -515,7 +515,7 @@ namespace MediaTekDocuments.dal
         public async Task<bool> CreerDocumentUnitaire(DocumentUnitaire documentunitaire)
         {
             string jsonDocumentUnitaire = JsonConvert.SerializeObject(documentunitaire, new CustomDateTimeConverter());
-            MessageBox.Show("JSON DocumentUnitaire envoyée : " + jsonDocumentUnitaire);
+            //MessageBox.Show("JSON DocumentUnitaire envoyée : " + jsonDocumentUnitaire);
             try
             {
                 List<DocumentUnitaire> liste = await TraitementRecup<DocumentUnitaire>(POST, "documentunitaire", "champs=" + jsonDocumentUnitaire);
