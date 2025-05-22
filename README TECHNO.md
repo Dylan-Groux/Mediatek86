@@ -102,7 +102,6 @@ Ce contrôleur gère la logique métier de l'application MediaTekDocuments en or
 
 ### 📌 Exemple d'utilisation
 
-```csharp
 FrmMediatekController controller = new FrmMediatekController();
 var livres = await controller.GetAllLivres();
 string newCommandeId = await controller.GenerateCommandeId();
